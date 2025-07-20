@@ -30,7 +30,8 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/login", "/register", "/css/**", "/js/**", "/home1").permitAll()
+                .requestMatchers("/", "/login", "/register", "/forgot-password", "/reset-password",
+                "/css/**", "/js/**", "/home1").permitAll()
                 .requestMatchers("/home2").authenticated()
                 .requestMatchers("/home3").hasRole("ADMIN")
                 .anyRequest().authenticated()

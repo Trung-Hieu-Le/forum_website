@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 @Controller
 public class HomeController {
 
-    @GetMapping("/home1")
+    @GetMapping({"/", "/home1"})
     public String home1() {
         return "client/home1";
     }

@@ -1,18 +1,19 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Login</title>
-    <link rel="stylesheet" href="/css/styles.css">
-</head>
-<body>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{client/layouts/base}">
+<div th:fragment="content">
     <h1>Login</h1>
-    <form method="post" action="/login">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br>
-        <button type="submit">Login</button>
+    <form method="post" action="/login" th:object="${loginDto}">
+        <div class="mb-3">
+            <label for="username" class="form-label">Username:</label>
+            <input type="text" id="username" th:field="*{username}" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password:</label>
+            <input type="password" id="password" th:field="*{password}" class="form-control" required>
+        </div>
+        <a href="/forgot-password">Forgot Password?</a>
+        <button type="submit" class="btn btn-primary">Login</button>
     </form>
-    <p th:if="${param.error}">Invalid credentials</p>
-</body>
+    <p th:if="${param.error}" class="text-danger mt-2">Invalid credentials</p>
+</div>
 </html>

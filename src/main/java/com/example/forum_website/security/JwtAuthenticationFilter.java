@@ -4,9 +4,13 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -16,6 +20,8 @@ import java.util.stream.Collectors;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     private final JwtUtil jwtUtil = new JwtUtil();
 
@@ -28,11 +34,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (claims != null) {
                 String username = claims.getSubject();
                 List<String> roles = claims.get("roles", List.class);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 List<SimpleGrantedAuthority> authorities = roles.stream()
                     .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                     .collect(Collectors.toList());
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                    username, null, authorities);
+                    userDetails, null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
         }
