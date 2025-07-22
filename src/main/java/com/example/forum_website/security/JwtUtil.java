@@ -4,26 +4,33 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
-import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class JwtUtil {
-    private static final String SECRET = "mysecretkey";
-    private static final long EXPIRATION = 86400000; // 1 day
+    @Value("${jwt.secret}")
+    private String SECRET;
 
-    public String generateToken(String username, List<String> roles) {
+    @Value("${jwt.expiration}")
+    private long EXPIRATION;
+
+    public String generateToken(String username, String role) {
         return Jwts.builder()
-            .setSubject(username)
-            .claim("roles", roles)
-            .setIssuedAt(new Date())
-            .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
-            .signWith(SignatureAlgorithm.HS512, SECRET)
-            .compact();
+                .setSubject(username)
+                .claim("role", role)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
+                .signWith(SignatureAlgorithm.HS512, SECRET)
+                .compact();
     }
 
     public Claims validateToken(String token) {
-        return Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody();
+        try {
+            return Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody();
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

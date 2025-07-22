@@ -10,16 +10,17 @@ import com.example.forum_website.service.UserService;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -38,17 +39,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void authenticateAndSetToken(LoginDto loginDto, HttpServletResponse response) {
-        Authentication auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
-        UserDetails userDetails = (UserDetails) auth.getPrincipal();
-        String token = jwtUtil.generateToken(userDetails.getUsername(),
-                userDetails.getAuthorities().stream().map(a -> a.getAuthority().replace("ROLE_", ""))
-                        .collect(Collectors.toList()));
-        Cookie cookie = new Cookie("token", token);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        response.addCookie(cookie);
+    public void authenticateAndSetToken(LoginDto loginDto, HttpServletResponse response) throws Exception {
+        try {
+            Authentication auth = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
+            UserDetails userDetails = (UserDetails) auth.getPrincipal();
+            User user = userRepository.findByUsername(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            String token = jwtUtil.generateToken(user.getUsername(), user.getRole().name());
+            Cookie cookie = new Cookie("token", token);
+            cookie.setPath("/");
+            cookie.setHttpOnly(true);
+            response.addCookie(cookie);
+        } catch (BadCredentialsException e) {
+            throw new Exception("Invalid username or password");
+        } catch (LockedException e) {
+            throw new Exception("Account is locked");
+        } catch (AuthenticationException e) {
+            throw new Exception("Authentication failed: " + e.getMessage());
+        }
     }
 
     @Override

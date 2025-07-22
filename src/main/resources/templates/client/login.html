@@ -14,6 +14,6 @@
         <a href="/forgot-password">Forgot Password?</a>
         <button type="submit" class="btn btn-primary">Login</button>
     </form>
-    <p th:if="${param.error}" class="text-danger mt-2">Invalid credentials</p>
+    <p th:if="${error}" class="text-danger mt-2" th:text="${error}"></p>
 </div>
 </html>

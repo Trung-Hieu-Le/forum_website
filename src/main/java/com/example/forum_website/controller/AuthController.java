@@ -33,12 +33,14 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login(@ModelAttribute LoginDto loginDto, HttpServletResponse response) {
+    public String login(@ModelAttribute LoginDto loginDto, HttpServletResponse response, Model model) {
         try {
             userService.authenticateAndSetToken(loginDto, response);
             return "redirect:/home2";
         } catch (Exception e) {
-            return "redirect:/login?error";
+            model.addAttribute("loginDto", loginDto);
+            model.addAttribute("error", e.getMessage());
+            return "client/login";
         }
     }
 
