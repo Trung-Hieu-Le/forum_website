@@ -7,7 +7,8 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <th:block th:if="${#authentication == null or #authentication.principal == 'anonymousUser'}">
+                    <span th:text="${userId}"></span>
+                    <th:block th:if="${userId == null}">
                         <li class="nav-item">
                             <a class="nav-link" href="/login">Login</a>
                         </li>
@@ -15,9 +16,9 @@
                             <a class="nav-link" href="/register">Register</a>
                         </li>
                     </th:block>
-                    <th:block th:if="${#authentication != null and #authentication.principal != 'anonymousUser'}">
+                    <th:block th:if="${userId != null}">
                         <li class="nav-item">
-                            <a class="nav-link" href="/profile" th:text="${#authentication.principal.username}">Profile</a>
+                            <a class="nav-link" href="/profile">Profile</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="/logout">Logout</a>

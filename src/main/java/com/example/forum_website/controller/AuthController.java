@@ -36,7 +36,7 @@ public class AuthController {
     public String login(@ModelAttribute LoginDto loginDto, HttpServletResponse response, Model model) {
         try {
             userService.authenticateAndSetToken(loginDto, response);
-            return "redirect:/home2";
+            return "redirect:/";
         } catch (Exception e) {
             model.addAttribute("loginDto", loginDto);
             model.addAttribute("error", e.getMessage());

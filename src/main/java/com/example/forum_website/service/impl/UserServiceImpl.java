@@ -51,6 +51,10 @@ public class UserServiceImpl implements UserService {
             cookie.setPath("/");
             cookie.setHttpOnly(true);
             response.addCookie(cookie);
+            Cookie userIdCookie = new Cookie("userId", String.valueOf(user.getId()));
+            userIdCookie.setPath("/");
+            userIdCookie.setHttpOnly(true);
+            response.addCookie(userIdCookie);
         } catch (BadCredentialsException e) {
             throw new Exception("Invalid username or password");
         } catch (LockedException e) {

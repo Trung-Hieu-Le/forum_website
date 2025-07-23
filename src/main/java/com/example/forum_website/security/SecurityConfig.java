@@ -11,7 +11,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 import jakarta.servlet.http.Cookie;
 
 @Configuration
@@ -30,7 +29,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/home2", "/settings/**").authenticated()
+                .requestMatchers("/profile/**", "/settings/**").authenticated()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().permitAll()
             )
@@ -47,6 +46,10 @@ public class SecurityConfig {
                     cookie.setMaxAge(0);
                     cookie.setPath("/");
                     response.addCookie(cookie);
+                    Cookie userIdCookie = new Cookie("userId", null);
+                    userIdCookie.setMaxAge(0);
+                    userIdCookie.setPath("/");
+                    response.addCookie(userIdCookie);
                     response.sendRedirect("/login");
                 })
                 .permitAll()
