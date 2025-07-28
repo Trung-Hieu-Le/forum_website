@@ -1,0 +1,10 @@
+<div class="container">
+    <h1>Feedback</h1>
+    <form th:action="@{/feedback/submit}" method="post">
+        <div class="mb-3">
+            <label for="content" class="form-label">Your Feedback</label>
+            <textarea class="form-control" id="content" name="content" rows="5"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Feedback</button>
+    </form>
+</div>

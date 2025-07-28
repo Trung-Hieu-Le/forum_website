@@ -21,6 +21,7 @@ public class User {
     private String password;
     private UserRole role;
     private String resetToken;
+    private String avatar;
 
     public User() {}
 

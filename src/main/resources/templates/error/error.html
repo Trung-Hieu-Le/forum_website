@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{client/layouts/base}">
+<div th:fragment="content">
+    <h1>[[${statusCode}]] - [[${errorTitle}]]</h1>
+    <p>[[${errorMessage}]]</p>
+    <button onclick="history.back()">Quay lại</button>
+</div>
+</html>

@@ -3,7 +3,6 @@ package com.example.forum_website.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -35,6 +34,7 @@ public class HomeController {
     @GetMapping("/home2")
     public String home2(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("Current user: " + auth.getName());
         String username = auth.getName();
         String role = auth.getAuthorities().stream()
                 .map(a -> a.getAuthority().replace("ROLE_", ""))
@@ -46,7 +46,6 @@ public class HomeController {
     }
 
     @GetMapping("/home3")
-    @PreAuthorize("hasRole('ADMIN')")
     public String home3() {
         return "client/home3";
     }

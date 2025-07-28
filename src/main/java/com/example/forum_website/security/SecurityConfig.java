@@ -11,12 +11,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.Cookie;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
@@ -29,17 +30,19 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/profile/**", "/settings/**").authenticated()
-                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/profile/**", "/settings/**", "/home2").authenticated()
+                .requestMatchers("/admin/**", "/home3").hasRole("ADMIN")
                 .anyRequest().permitAll()
             )
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(ex -> ex
-                .authenticationEntryPoint((request, response, authException) -> {
-                    response.sendRedirect("/login");
+                .authenticationEntryPoint((req, res, authEx) -> res.sendRedirect("/login"))
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    request.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, 403);
+                    request.getRequestDispatcher("/error").forward(request, response);
                 })
             )
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-            .logout(logout -> logout
+            .logout(logout -> logout 
                 .logoutUrl("/logout")
                 .logoutSuccessHandler((request, response, authentication) -> {
                     Cookie cookie = new Cookie("token", null);

@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
     private final JwtUtil jwtUtil;
 
     public UserServiceImpl(AuthenticationManager authenticationManager, UserRepository userRepository,
-                           PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+            PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -79,8 +79,7 @@ public class UserServiceImpl implements UserService {
                 registerDto.getUsername(),
                 registerDto.getEmail(),
                 passwordEncoder.encode(registerDto.getPassword()),
-                UserRole.USER
-        );
+                UserRole.USER);
         userRepository.save(user);
     }
 
@@ -105,5 +104,11 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setResetToken(null);
         userRepository.save(user);
+    }
+
+    @Override
+    public User getUserById(Long userId) throws Exception {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new Exception("User not found with ID: " + userId));
     }
 }
