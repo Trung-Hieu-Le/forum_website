@@ -34,7 +34,6 @@ public class HomeController {
     @GetMapping("/home2")
     public String home2(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("Current user: " + auth.getName());
         String username = auth.getName();
         String role = auth.getAuthorities().stream()
                 .map(a -> a.getAuthority().replace("ROLE_", ""))

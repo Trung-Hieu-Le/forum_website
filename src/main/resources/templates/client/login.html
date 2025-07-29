@@ -4,7 +4,7 @@
     <h1>Login</h1>
     <form method="post" action="/login" th:object="${loginDto}">
         <div class="mb-3">
-            <label for="username" class="form-label">Username:</label>
+            <label for="username" class="form-label" th:text="#{login.input.username}">Username:</label>
             <input type="text" id="username" th:field="*{username}" class="form-control" required>
         </div>
         <div class="mb-3">

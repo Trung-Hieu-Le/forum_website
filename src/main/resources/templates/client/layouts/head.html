@@ -4,5 +4,24 @@
     <title th:text="${title} ?: 'My Application'"></title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/theme.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .dropdown-submenu {
+            position: relative;
+        }
+
+        .dropdown-submenu > .dropdown-menu {
+            top: 0;
+            right: 100%;
+            margin-left: 0.1rem;
+            margin-right: 0.1rem;
+            display: none;
+        }
+
+        .dropdown-submenu:hover > .dropdown-menu {
+            display: block;
+        }
+    </style>
 </head>

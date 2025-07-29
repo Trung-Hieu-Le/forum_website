@@ -1,4 +1,4 @@
-package com.example.forum_website.security;
+package com.example.forum_website.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +11,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.example.forum_website.security.JwtAuthenticationFilter;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.Cookie;
@@ -45,11 +47,11 @@ public class SecurityConfig {
             .logout(logout -> logout 
                 .logoutUrl("/logout")
                 .logoutSuccessHandler((request, response, authentication) -> {
-                    Cookie cookie = new Cookie("token", null);
+                    Cookie cookie = new Cookie("tokenAuth", null);
                     cookie.setMaxAge(0);
                     cookie.setPath("/");
                     response.addCookie(cookie);
-                    Cookie userIdCookie = new Cookie("userId", null);
+                    Cookie userIdCookie = new Cookie("usernameAuth", null);
                     userIdCookie.setMaxAge(0);
                     userIdCookie.setPath("/");
                     response.addCookie(userIdCookie);

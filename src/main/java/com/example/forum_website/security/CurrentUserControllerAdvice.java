@@ -20,21 +20,17 @@ public class CurrentUserControllerAdvice {
     @Autowired
     private UserService userService;
     
-    @ModelAttribute("userId")
-    public String getCurrentUserId(HttpServletRequest request) {
-        String path = request.getRequestURI();
-
-        if (AUTH_CLEAR_PATHS.contains(path)) {
+    @ModelAttribute("usernameAuth")
+    public String getUsernameAuth(HttpServletRequest request) {
+        if (AUTH_CLEAR_PATHS.contains(request.getRequestURI())) {
             return null;
         }
 
         Cookie[] cookies = request.getCookies();
-        String userId = null;
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if ("userId".equals(cookie.getName())) {
-                    userId = cookie.getValue();
-                    return userId;
+                if ("usernameAuth".equals(cookie.getName())) {
+                    return cookie.getValue();
                 }
             }
         }
@@ -42,10 +38,10 @@ public class CurrentUserControllerAdvice {
     }
 
     @ModelAttribute("userAuth")
-    public UserAuthDto getUserAuth(@ModelAttribute("userId") String userId) {
-        if (userId != null) {
+    public UserAuthDto getUserAuth(@ModelAttribute("usernameAuth") String username) {
+        if (username != null) {
             try {
-                User user = userService.getUserById(Long.parseLong(userId));
+                User user = userService.getUserByUsername(username);
                 return new UserAuthDto(user.getUsername(), user.getAvatar());
             } catch (Exception ignored) {}
         }

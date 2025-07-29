@@ -1,0 +1,31 @@
+/* Light Theme (default) */
+.theme-light {
+    --bg-color: #ffffff;
+    --text-color: #000000;
+    --primary-color: #0d6efd;
+}
+
+/* Dark Theme */
+.theme-dark {
+    --bg-color: #121212;
+    --text-color: #e0e0e0;
+    --primary-color: #bb86fc;
+}
+
+/* Dark Blue Theme */
+.theme-darkblue {
+    --bg-color: #001f3f;
+    --text-color: #ffffff;
+    --primary-color: #0074D9;
+}
+
+/* Apply variables globally */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}

@@ -13,6 +13,7 @@ import com.example.forum_website.dto.LoginDto;
 import com.example.forum_website.dto.RegisterDto;
 import com.example.forum_website.service.UserService;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -23,8 +24,9 @@ public class AuthController {
     private UserService userService;
 
     @GetMapping("/login")
-    public String loginPage(Model model) {
+    public String loginPage(Model model, HttpServletResponse response) {
         try {
+            clearAuthCookies(response);
             model.addAttribute("loginDto", new LoginDto());
             return "client/login";
         } catch (Exception e) {
@@ -45,8 +47,9 @@ public class AuthController {
     }
 
     @GetMapping("/register")
-    public String registerPage(Model model) {
+    public String registerPage(Model model, HttpServletResponse response) {
         try {
+            clearAuthCookies(response);
             if (!model.containsAttribute("registerDto")) {
                 model.addAttribute("registerDto", new RegisterDto());
             }
@@ -73,8 +76,9 @@ public class AuthController {
     }
 
     @GetMapping("/forgot-password")
-    public String forgotPasswordPage(Model model) {
+    public String forgotPasswordPage(Model model, HttpServletResponse response) {
         try {
+            clearAuthCookies(response);
             model.addAttribute("email", "");
             return "client/forgot-password";
         } catch (Exception e) {
@@ -118,4 +122,18 @@ public class AuthController {
             return "redirect:/reset-password?error=" + e.getMessage();
         }
     }
+
+    private void clearAuthCookies(HttpServletResponse response) {
+    Cookie tokenCookie = new Cookie("tokenAuth", null);
+    tokenCookie.setPath("/");
+    tokenCookie.setMaxAge(0);
+    tokenCookie.setHttpOnly(true);
+    response.addCookie(tokenCookie);
+
+    Cookie usernameCookie = new Cookie("usernameAuth", null);
+    usernameCookie.setPath("/");
+    usernameCookie.setMaxAge(0);
+    usernameCookie.setHttpOnly(true);
+    response.addCookie(usernameCookie);
+}
 }

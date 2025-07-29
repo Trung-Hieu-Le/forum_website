@@ -18,9 +18,10 @@
                     <th:block th:if="${userAuth != null}">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
-                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img th:src="@{${userAuth.avatar}}" class="rounded-circle me-2" style="width:32px;height:32px;"
-                                onerror="this.onerror=null;this.src='/images/default-avatar.png'">
+                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img th:src="@{${userAuth.avatar}}" class="rounded-circle me-2"
+                                    style="width:32px;height:32px;"
+                                    onerror="this.onerror=null;this.src='/images/default-avatar.png'">
                                 <span th:text="${userAuth.username}">Username</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
@@ -28,11 +29,36 @@
                                 <li><a class="dropdown-item" href="/setting">Cài đặt</a></li>
                                 <li><a class="dropdown-item" href="/feedback">Góp ý</a></li>
                                 <li><a class="dropdown-item" href="/manual">Hướng dẫn</a></li>
-                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
                                 <li><a class="dropdown-item text-danger" href="/logout">Đăng xuất</a></li>
                             </ul>
                         </li>
                     </th:block>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="settingDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fa fa-cog" aria-hidden="true"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingDropdown">
+                            <li class="dropdown-submenu">
+                                <a class="dropdown-item dropdown-toggle" href="#">🌐 Language</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/change-language?lang=vi">VI Tiếng Việt</a></li>
+                                    <li><a class="dropdown-item" href="/change-language?lang=en">EN English</a></li>
+                                    <li><a class="dropdown-item" href="/change-language?lang=ja">JA 日本語</a></li>
+                                </ul>
+                            </li>
+                            <li class="dropdown-submenu">
+                                <a class="dropdown-item dropdown-toggle" href="#">🎨 Theme</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/change-theme?theme=light">Light</a></li>
+                                    <li><a class="dropdown-item" href="/change-theme?theme=dark">Dark</a></li>
+                                    <li><a class="dropdown-item" href="/change-theme?theme=darkblue">Dark Blue</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>

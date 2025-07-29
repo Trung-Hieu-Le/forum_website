@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+    th:class="'theme-' + ${session.theme != null ? session.theme : 'light'}"
+>
 <head th:replace="~{client/layouts/head :: head}"></head>
 <body>
     <header th:replace="~{client/layouts/header :: header}"></header>

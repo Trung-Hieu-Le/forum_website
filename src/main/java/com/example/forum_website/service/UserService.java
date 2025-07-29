@@ -12,4 +12,5 @@ public interface UserService {
     String initiatePasswordReset(String email) throws Exception;
     void resetPassword(String token, String newPassword, String confirmPassword) throws Exception;
     User getUserById(Long userId) throws Exception;
+    User getUserByUsername(String username) throws Exception;
 }

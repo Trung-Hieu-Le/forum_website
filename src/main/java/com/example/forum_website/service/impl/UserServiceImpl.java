@@ -47,14 +47,17 @@ public class UserServiceImpl implements UserService {
             User user = userRepository.findByUsername(userDetails.getUsername())
                     .orElseThrow(() -> new RuntimeException("User not found"));
             String token = jwtUtil.generateToken(user.getUsername(), user.getRole().name());
-            Cookie cookie = new Cookie("token", token);
+            Cookie cookie = new Cookie("tokenAuth", token);
             cookie.setPath("/");
             cookie.setHttpOnly(true);
+            cookie.setMaxAge((int) (jwtUtil.getExpiration() / 1000));
             response.addCookie(cookie);
-            Cookie userIdCookie = new Cookie("userId", String.valueOf(user.getId()));
-            userIdCookie.setPath("/");
-            userIdCookie.setHttpOnly(true);
-            response.addCookie(userIdCookie);
+            Cookie usernameCookie = new Cookie("usernameAuth", user.getUsername());
+            usernameCookie.setPath("/");
+            usernameCookie.setHttpOnly(true);
+            usernameCookie.setMaxAge((int) (jwtUtil.getExpiration() / 1000));
+            response.addCookie(usernameCookie);
+
         } catch (BadCredentialsException e) {
             throw new Exception("Invalid username or password");
         } catch (LockedException e) {
@@ -110,5 +113,11 @@ public class UserServiceImpl implements UserService {
     public User getUserById(Long userId) throws Exception {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new Exception("User not found with ID: " + userId));
+    }
+
+    @Override
+    public User getUserByUsername(String username) throws Exception {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new Exception("User not found with username: " + username));
     }
 }
