@@ -1,4 +1,4 @@
-# 🌱 Spring Boot Code Style & Best Practices Guide
+# 🌱 Spring Boot Code Style & Best Practices Guide 
 
 This guide summarizes the **most essential and frequently used rules** for writing maintainable, secure, and scalable Java Spring Boot applications.
 
