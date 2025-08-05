@@ -1,19 +1,14 @@
 package com.example.forum_website.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
 public class UserAuthDto {
     private String username;
     private String avatar;
 
-    public UserAuthDto(String username, String avatar) {
-        this.username = username;
-        this.avatar = avatar;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getAvatar() {
-        return avatar;
-    }
 }
