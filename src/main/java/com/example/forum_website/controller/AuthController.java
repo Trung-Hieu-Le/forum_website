@@ -1,14 +1,22 @@
 package com.example.forum_website.controller;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.example.forum_website.dto.ApiResponse;
 import com.example.forum_website.dto.LoginDto;
 import com.example.forum_website.dto.RegisterDto;
 import com.example.forum_website.service.UserService;
@@ -23,6 +31,9 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private MessageSource messageSource;
+
     @GetMapping("/login")
     public String loginPage(Model model, HttpServletResponse response) {
         try {
@@ -35,14 +46,14 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login(@ModelAttribute LoginDto loginDto, HttpServletResponse response, Model model) {
+    @ResponseBody
+    public ApiResponse login(@RequestBody LoginDto loginDto, HttpServletResponse response) {
         try {
             userService.authenticateAndSetToken(loginDto, response);
-            return "redirect:/";
+            String message = messageSource.getMessage("login.success", null, LocaleContextHolder.getLocale());
+            return new ApiResponse("ok", "success", message, "/");
         } catch (Exception e) {
-            model.addAttribute("loginDto", loginDto);
-            model.addAttribute("error", e.getMessage());
-            return "client/login";
+            return new ApiResponse("error", "danger", e.getMessage(), null);
         }
     }
 
@@ -60,18 +71,21 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String register(@Valid @ModelAttribute RegisterDto registerDto, BindingResult result, Model model) {
+    @ResponseBody
+    public ApiResponse register(@Valid @RequestBody RegisterDto registerDto, BindingResult result,
+            HttpServletResponse response) {
+        if (result.hasErrors()) {
+            List<String> errs = result.getAllErrors()
+                    .stream()
+                    .map(ObjectError::getDefaultMessage)
+                    .collect(Collectors.toList());
+            return new ApiResponse("error", "warning", errs, null);
+        }
         try {
-            if (result.hasErrors()) {
-                model.addAttribute("registerDto", registerDto);
-                return "client/register";
-            }
             userService.registerUser(registerDto);
-            return "redirect:/login";
+            return new ApiResponse("ok", "success", "Đăng ký thành công", "/login");
         } catch (Exception e) {
-            result.reject("error", e.getMessage());
-            model.addAttribute("registerDto", registerDto);
-            return "client/register";
+            return new ApiResponse("error", "danger", e.getMessage(), null);
         }
     }
 
@@ -87,13 +101,19 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password")
-    public String initiatePasswordReset(@RequestParam String email, HttpSession session) {
+    @ResponseBody
+    public ApiResponse initiatePasswordReset(@RequestBody Map<String, String> body, HttpSession session) {
+        String email = body.get("email");
+        if (email == null || email.isBlank()) {
+            return new ApiResponse("error", "warning", "Email không được để trống", null);
+        }
         try {
-            String resetToken = userService.initiatePasswordReset(email);
-            session.setAttribute("resetPasswordToken", resetToken);
-            return "redirect:/reset-password";
+            String token = userService.initiatePasswordReset(email);
+            session.setAttribute("resetPasswordToken", token);
+            return new ApiResponse("ok", "success",
+                    "Xác thực email thành công", "/reset-password");
         } catch (Exception e) {
-            return "redirect:/forgot-password?error=" + e.getMessage();
+            return new ApiResponse("error", "danger", e.getMessage(), null);
         }
     }
 
@@ -112,28 +132,32 @@ public class AuthController {
     }
 
     @PostMapping("/reset-password")
-    public String resetPassword(@RequestParam String token, @RequestParam String newPassword,
-            @RequestParam String confirmPassword, HttpSession session) {
+    @ResponseBody
+    public ApiResponse resetPassword(@RequestBody Map<String, String> body,
+            HttpSession session) {
         try {
+            String token = body.get("token");
+            String newPassword = body.get("newPassword");
+            String confirmPassword = body.get("confirmPassword");
             userService.resetPassword(token, newPassword, confirmPassword);
             session.removeAttribute("resetPasswordToken");
-            return "redirect:/login?resetSuccess";
+            return new ApiResponse("ok", "success", "Đổi mật khẩu thành công", "/login");
         } catch (Exception e) {
-            return "redirect:/reset-password?error=" + e.getMessage();
+            return new ApiResponse("error", "danger", e.getMessage(), null);
         }
     }
 
     private void clearAuthCookies(HttpServletResponse response) {
-    Cookie tokenCookie = new Cookie("tokenAuth", null);
-    tokenCookie.setPath("/");
-    tokenCookie.setMaxAge(0);
-    tokenCookie.setHttpOnly(true);
-    response.addCookie(tokenCookie);
+        Cookie tokenCookie = new Cookie("tokenAuth", null);
+        tokenCookie.setPath("/");
+        tokenCookie.setMaxAge(0);
+        tokenCookie.setHttpOnly(true);
+        response.addCookie(tokenCookie);
 
-    Cookie usernameCookie = new Cookie("usernameAuth", null);
-    usernameCookie.setPath("/");
-    usernameCookie.setMaxAge(0);
-    usernameCookie.setHttpOnly(true);
-    response.addCookie(usernameCookie);
-}
+        Cookie usernameCookie = new Cookie("usernameAuth", null);
+        usernameCookie.setPath("/");
+        usernameCookie.setMaxAge(0);
+        usernameCookie.setHttpOnly(true);
+        response.addCookie(usernameCookie);
+    }
 }

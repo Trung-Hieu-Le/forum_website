@@ -10,6 +10,10 @@ import com.example.forum_website.service.UserService;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
@@ -24,6 +28,8 @@ import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
+    @Autowired
+    private MessageSource messageSource;
 
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
@@ -59,11 +65,11 @@ public class UserServiceImpl implements UserService {
             response.addCookie(usernameCookie);
 
         } catch (BadCredentialsException e) {
-            throw new Exception("Invalid username or password");
+            throw new Exception(messageSource.getMessage("auth.invalid", null, LocaleContextHolder.getLocale()));
         } catch (LockedException e) {
-            throw new Exception("Account is locked");
+            throw new Exception(messageSource.getMessage("auth.locked", null, LocaleContextHolder.getLocale()));
         } catch (AuthenticationException e) {
-            throw new Exception("Authentication failed: " + e.getMessage());
+            throw new Exception(messageSource.getMessage("auth.failed", null, LocaleContextHolder.getLocale()));
         }
     }
 

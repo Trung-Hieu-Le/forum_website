@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{client/layouts/base}">
 <div th:fragment="content">
     <h1>Login</h1>
-    <form method="post" action="/login" th:object="${loginDto}">
+    <form method="post" action="/login" th:object="${loginDto}" data-ajax="true">
         <div class="mb-3">
             <label for="username" class="form-label" th:text="#{login.input.username}">Username:</label>
             <input type="text" id="username" th:field="*{username}" class="form-control" required>
@@ -14,6 +14,5 @@
         <a href="/forgot-password">Forgot Password?</a>
         <button type="submit" class="btn btn-primary">Login</button>
     </form>
-    <p th:if="${error}" class="text-danger mt-2" th:text="${error}"></p>
 </div>
 </html>

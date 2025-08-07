@@ -1,0 +1,97 @@
+<th:block th:fragment="noticeScript">
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+
+    <script>
+        function showToast(status, message) {
+            const toastStyles = {
+                primary: { headerBg: '#cfe2ff', color: '#0d6efd' },
+                success: { headerBg: '#d1e7dd', color: '#198754' },
+                warning: { headerBg: '#fff3cd', color: '#ffc107' },
+                danger: { headerBg: '#f8d7da', color: '#dc3545' }
+            };
+            const icons = {
+                primary: 'fa-info-circle',
+                success: 'fa-check-circle',
+                warning: 'fa-exclamation-triangle',
+                danger: 'fa-times-circle'
+            };
+
+            const isDanger = status === 'danger';
+            const toastDelay = 10000;
+
+            const toastId = `toast-${Date.now()}`;
+
+            const toastHtml = `
+                <div id="${toastId}" class="toast toast-${status}" role="alert" aria-live="assertive" aria-atomic="true"
+                    style="background-color: ${toastStyles[status].headerBg};"
+                    data-bs-autohide="${!isDanger}" ${!isDanger ? `data-bs-delay="${toastDelay}"` : ''}>
+                    <div class="toast-header" style="background-color: ${toastStyles[status].headerBg}; color: ${toastStyles[status].color}">
+                        <i class="fas ${icons[status]} me-2" style="color: ${toastStyles[status].color}"></i>
+                        <strong class="me-auto">${status.charAt(0).toUpperCase() + status.slice(1)}</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                        <div class="progress w-100 mt-2">
+                            <div class="progress-bar" style="width: 100%; background-color: ${toastStyles[status].color}; height: 4px;" role="progressbar"></div>
+                        </div>
+                    </div>
+                    <div class="toast-body">${message}</div>
+                </div>
+            `;
+
+            $('.toast-container').append(toastHtml);
+            const $toast = $(`#${toastId}`);
+            const toast = new bootstrap.Toast($toast[0]);
+            toast.show();
+
+            if (!isDanger) {
+                setTimeout(() => {
+                    $toast.find('.progress-bar')
+                        .css('width', '0%')
+                        .css('transition', `width ${toastDelay}ms linear`);
+                }, 10);
+            }
+
+            $toast.on('hidden.bs.toast', () => $toast.remove());
+        }
+
+        $(document).ready(function () {
+            const status = /*[[${toastStatus}]]*/ 'null';
+            const message = /*[[${toastMessage}]]*/ 'null';
+            if (status !== 'null' && message !== 'null') {
+                showToast(status, message);
+            }
+
+            // Auto-AJAX forms
+            $('form[data-ajax="true"]').submit(function (e) {
+                e.preventDefault();
+                const $form = $(this);
+                const url = $form.attr('action');
+                const method = $form.attr('method') || 'POST';
+                const formData = {};
+                $form.serializeArray().forEach(({ name, value }) => formData[name] = value);
+
+                $.ajax({
+                    url: url,
+                    type: method,
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData)
+                }).done(function (resp) {
+                    // Nếu có mảng messages, show toast cho từng cái
+                    if (resp.messages && Array.isArray(resp.messages)) {
+                        resp.messages.forEach(msg => showToast(resp.errorTag, msg));
+                    } else {
+                        // fallback: single message
+                        showToast(resp.errorTag, resp.message);
+                    }
+
+                    // nếu thành công và có redirectUrl
+                    if (resp.status === 'ok' && resp.redirectUrl) {
+                        setTimeout(() => window.location.href = resp.redirectUrl, 800);
+                    }
+                })
+                    .fail(function () {
+                        showToast('danger', 'An unexpected error occurred');
+                    });
+            });
+        });
+    </script>
+</th:block>
