@@ -11,9 +11,6 @@ import com.example.forum_website.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
@@ -28,9 +25,6 @@ import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
-    @Autowired
-    private MessageSource messageSource;
-
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -51,7 +45,7 @@ public class UserServiceImpl implements UserService {
                     new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
             UserDetails userDetails = (UserDetails) auth.getPrincipal();
             User user = userRepository.findByUsername(userDetails.getUsername())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new RuntimeException("auth.userNotFound"));
             String token = jwtUtil.generateToken(user.getUsername(), user.getRole().name());
             Cookie cookie = new Cookie("tokenAuth", token);
             cookie.setPath("/");
@@ -63,26 +57,25 @@ public class UserServiceImpl implements UserService {
             usernameCookie.setHttpOnly(true);
             usernameCookie.setMaxAge((int) (jwtUtil.getExpiration() / 1000));
             response.addCookie(usernameCookie);
-
         } catch (BadCredentialsException e) {
-            throw new Exception(messageSource.getMessage("auth.invalid", null, LocaleContextHolder.getLocale()));
+            throw new Exception("auth.invalid");
         } catch (LockedException e) {
-            throw new Exception(messageSource.getMessage("auth.locked", null, LocaleContextHolder.getLocale()));
+            throw new Exception("auth.locked");
         } catch (AuthenticationException e) {
-            throw new Exception(messageSource.getMessage("auth.failed", null, LocaleContextHolder.getLocale()));
+            throw new Exception("auth.failed");
         }
     }
 
     @Override
     public void registerUser(RegisterDto registerDto) throws Exception {
         if (!registerDto.getPassword().equals(registerDto.getConfirmPassword())) {
-            throw new Exception("Passwords do not match");
+            throw new Exception("register.passwordsNotMatch");
         }
         if (userRepository.findByUsername(registerDto.getUsername()).isPresent()) {
-            throw new Exception("Username already exists");
+            throw new Exception("register.username.exists");
         }
         if (userRepository.findByEmail(registerDto.getEmail()).isPresent()) {
-            throw new Exception("Email already exists");
+            throw new Exception("register.email.exists");
         }
         User user = new User(
                 registerDto.getUsername(),
@@ -95,21 +88,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public String initiatePasswordReset(String email) throws Exception {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new Exception("User with email " + email + " not found"));
+                .orElseThrow(() -> new Exception("forgotPassword.emailNotFound," + email));
         String resetToken = UUID.randomUUID().toString();
         user.setResetToken(resetToken);
         userRepository.save(user);
-        // In a real app, send resetToken via email
         return resetToken;
     }
 
     @Override
     public void resetPassword(String token, String newPassword, String confirmPassword) throws Exception {
         if (!newPassword.equals(confirmPassword)) {
-            throw new Exception("Passwords do not match");
+            throw new Exception("resetPassword.passwordsNotMatch");
         }
         User user = userRepository.findByResetToken(token)
-                .orElseThrow(() -> new Exception("Invalid reset token"));
+                .orElseThrow(() -> new Exception("resetPassword.invalidToken"));
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setResetToken(null);
         userRepository.save(user);
@@ -118,12 +110,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(Long userId) throws Exception {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new Exception("User not found with ID: " + userId));
+                .orElseThrow(() -> new Exception("user.notFoundById," + userId));
     }
 
     @Override
     public User getUserByUsername(String username) throws Exception {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new Exception("User not found with username: " + username));
+                .orElseThrow(() -> new Exception("user.notFoundByUsername," + username));
     }
 }
