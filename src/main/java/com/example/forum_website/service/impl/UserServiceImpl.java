@@ -46,17 +46,12 @@ public class UserServiceImpl implements UserService {
             UserDetails userDetails = (UserDetails) auth.getPrincipal();
             User user = userRepository.findByUsername(userDetails.getUsername())
                     .orElseThrow(() -> new RuntimeException("auth.userNotFound"));
-            String token = jwtUtil.generateToken(user.getUsername(), user.getRole().name());
+            String token = jwtUtil.generateToken(user.getId());
             Cookie cookie = new Cookie("tokenAuth", token);
             cookie.setPath("/");
             cookie.setHttpOnly(true);
             cookie.setMaxAge((int) (jwtUtil.getExpiration() / 1000));
             response.addCookie(cookie);
-            Cookie usernameCookie = new Cookie("usernameAuth", user.getUsername());
-            usernameCookie.setPath("/");
-            usernameCookie.setHttpOnly(true);
-            usernameCookie.setMaxAge((int) (jwtUtil.getExpiration() / 1000));
-            response.addCookie(usernameCookie);
         } catch (BadCredentialsException e) {
             throw new Exception("auth.invalid");
         } catch (LockedException e) {

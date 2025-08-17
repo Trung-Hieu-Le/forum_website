@@ -51,10 +51,6 @@ public class SecurityConfig {
                     cookie.setMaxAge(0);
                     cookie.setPath("/");
                     response.addCookie(cookie);
-                    Cookie userIdCookie = new Cookie("usernameAuth", null);
-                    userIdCookie.setMaxAge(0);
-                    userIdCookie.setPath("/");
-                    response.addCookie(userIdCookie);
                     response.sendRedirect("/login");
                 })
                 .permitAll()
