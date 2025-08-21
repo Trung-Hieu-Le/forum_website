@@ -13,6 +13,7 @@ public class ApiResponse {
     private String message;
     private List<String> messages;
     private String redirectUrl;
+    private String type; // toast, modal, etc.
 
     public ApiResponse(String status, String errorTag, String message, String redirectUrl) {
         this.status = status;
@@ -21,10 +22,26 @@ public class ApiResponse {
         this.redirectUrl = redirectUrl;
     }
 
+    public ApiResponse(String status, String errorTag, String message, String redirectUrl, String type) {
+        this.status = status;
+        this.errorTag = errorTag;
+        this.message = message;
+        this.redirectUrl = redirectUrl;
+        this.type = type;
+    }
+
     public ApiResponse(String status, String errorTag, List<String> messages, String redirectUrl) {
         this.status = status;
         this.errorTag = errorTag;
         this.messages = messages;
         this.redirectUrl = redirectUrl;
+    }
+
+    public ApiResponse(String status, String errorTag, List<String> messages, String redirectUrl, String type) {
+        this.status = status;
+        this.errorTag = errorTag;
+        this.messages = messages;
+        this.redirectUrl = redirectUrl;
+        this.type = type;
     }
 }

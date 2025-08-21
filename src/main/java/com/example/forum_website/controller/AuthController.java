@@ -2,16 +2,11 @@ package com.example.forum_website.controller;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.NoSuchMessageException;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,8 +16,11 @@ import com.example.forum_website.dto.ApiResponse;
 import com.example.forum_website.dto.LoginDto;
 import com.example.forum_website.dto.RegisterDto;
 import com.example.forum_website.service.UserService;
+import com.example.forum_website.utils.MessageUtil;
+import com.example.forum_website.utils.ValidationUtil;
+import com.example.forum_website.utils.CookieUtil;
+import com.example.forum_website.utils.ResponseBuilder;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -33,7 +31,7 @@ public class AuthController {
     private UserService userService;
 
     @Autowired
-    private MessageSource messageSource;
+    private MessageUtil messageUtil;
 
     @GetMapping("/login")
     public String loginPage(Model model, HttpServletResponse response) {
@@ -51,11 +49,11 @@ public class AuthController {
     public ApiResponse login(@RequestBody LoginDto loginDto, HttpServletResponse response) {
         try {
             userService.authenticateAndSetToken(loginDto, response);
-            String message = getMessage("login.success", null);
-            return new ApiResponse("ok", "success", message, "/");
+            String message = messageUtil.getMessage("login.success");
+            return ResponseBuilder.successWithMessage(message, "/");
         } catch (Exception e) {
-            String errorMessage = resolveErrorMessage(e);
-            return new ApiResponse("error", "danger", errorMessage, null);
+            String errorMessage = messageUtil.resolveErrorMessage(e);
+            return ResponseBuilder.errorWithMessage(errorMessage);
         }
     }
 
@@ -77,19 +75,16 @@ public class AuthController {
     public ApiResponse register(@Valid @RequestBody RegisterDto registerDto, BindingResult result,
             HttpServletResponse response) {
         if (result.hasErrors()) {
-            List<String> errs = result.getAllErrors()
-                    .stream()
-                    .map(ObjectError::getDefaultMessage)
-                    .collect(Collectors.toList());
-            return new ApiResponse("error", "warning", errs, null);
+            List<String> errs = ValidationUtil.extractErrorMessages(result);
+            return ResponseBuilder.validationError(errs);
         }
         try {
             userService.registerUser(registerDto);
-            String message = getMessage("register.success", null);
-            return new ApiResponse("ok", "success", message, "/login");
+            String message = messageUtil.getMessage("register.success");
+            return ResponseBuilder.successWithMessage(message, "/login");
         } catch (Exception e) {
-            String errorMessage = resolveErrorMessage(e);
-            return new ApiResponse("error", "danger", errorMessage, null);
+            String errorMessage = messageUtil.resolveErrorMessage(e);
+            return ResponseBuilder.errorWithMessage(errorMessage);
         }
     }
 
@@ -108,18 +103,18 @@ public class AuthController {
     @ResponseBody
     public ApiResponse initiatePasswordReset(@RequestBody Map<String, String> body, HttpSession session) {
         String email = body.get("email");
-        if (email == null || email.isBlank()) {
-            String errorMessage = getMessage("forgotPassword.email.notBlank", null);
-            return new ApiResponse("error", "warning", errorMessage, null);
+        if (!ValidationUtil.isNotBlank(email)) {
+            String errorMessage = messageUtil.getMessage("forgotPassword.email.notBlank");
+            return ResponseBuilder.warningWithMessage(errorMessage);
         }
         try {
             String token = userService.initiatePasswordReset(email);
             session.setAttribute("resetPasswordToken", token);
-            String message = getMessage("forgotPassword.success", null);
-            return new ApiResponse("ok", "success", message, "/reset-password");
+            String message = messageUtil.getMessage("forgotPassword.success");
+            return ResponseBuilder.successWithMessage(message, "/reset-password");
         } catch (Exception e) {
-            String errorMessage = resolveErrorMessage(e);
-            return new ApiResponse("error", "danger", errorMessage, null);
+            String errorMessage = messageUtil.resolveErrorMessage(e);
+            return ResponseBuilder.errorWithMessage(errorMessage);
         }
     }
 
@@ -146,40 +141,17 @@ public class AuthController {
             String confirmPassword = body.get("confirmPassword");
             userService.resetPassword(token, newPassword, confirmPassword);
             session.removeAttribute("resetPasswordToken");
-            String message = getMessage("resetPassword.success", null);
-            return new ApiResponse("ok", "success", message, "/login");
+            String message = messageUtil.getMessage("resetPassword.success");
+            return ResponseBuilder.successWithMessage(message, "/login");
         } catch (Exception e) {
-            String errorMessage = resolveErrorMessage(e);
-            return new ApiResponse("error", "danger", errorMessage, null);
+            String errorMessage = messageUtil.resolveErrorMessage(e);
+            return ResponseBuilder.errorWithMessage(errorMessage);
         }
     }
 
-    private String getMessage(String code, Object[] args) {
-        try {
-            return messageSource.getMessage(code, args, LocaleContextHolder.getLocale());
-        } catch (NoSuchMessageException e) {
-            return "Message not found for code: " + code;
-        }
-    }
 
-    private String resolveErrorMessage(Exception e) {
-        String[] parts = e.getMessage().split(",");
-        String messageKey = parts[0];
-        Object[] args = parts.length > 1 ? new Object[]{parts[1]} : null;
-        return getMessage(messageKey, args);
-    }
 
     private void clearAuthCookies(HttpServletResponse response) {
-        Cookie tokenCookie = new Cookie("tokenAuth", null);
-        tokenCookie.setPath("/");
-        tokenCookie.setMaxAge(0);
-        tokenCookie.setHttpOnly(true);
-        response.addCookie(tokenCookie);
-
-        Cookie usernameCookie = new Cookie("usernameAuth", null);
-        usernameCookie.setPath("/");
-        usernameCookie.setMaxAge(0);
-        usernameCookie.setHttpOnly(true);
-        response.addCookie(usernameCookie);
+        CookieUtil.clearCookies(response, "tokenAuth", "usernameAuth");
     }
 }

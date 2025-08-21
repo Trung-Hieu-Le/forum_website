@@ -1,18 +1,24 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{client/layouts/base}">
 <div th:fragment="content">
-    <h1 th:text="#{login.title}">Login</h1>
-    <form method="post" action="/login" th:object="${loginDto}" data-ajax="true">
+    <div class="auth-container">
+        <h1 th:text="#{login.title}">Login</h1>
+        <form id="loginForm" class="auth-form" method="post" action="/login" th:object="${loginDto}" data-validate="true">
         <div class="mb-3">
             <label for="username" class="form-label" th:text="#{login.input.username}">Username</label>
-            <input type="text" id="username" th:field="*{username}" class="form-control" required>
+            <input type="text" id="username" th:field="*{username}" class="form-control" required 
+                   data-field-name="Username" minlength="3" maxlength="50">
         </div>
         <div class="mb-3">
             <label for="password" class="form-label" th:text="#{login.input.password}">Password</label>
-            <input type="password" id="password" th:field="*{password}" class="form-control" required>
+            <input type="password" id="password" th:field="*{password}" class="form-control" required 
+                   data-field-name="Password" minlength="6">
         </div>
-        <a href="/forgot-password" th:text="#{login.forgotPassword}">Forgot Password?</a>
         <button type="submit" class="btn btn-primary" th:text="#{login.submit}">Login</button>
-    </form>
+        </form>
+        <div class="auth-links">
+            <a href="/forgot-password" th:text="#{login.forgotPassword}">Forgot Password?</a>
+        </div>
+    </div>
 </div>
 </html>
