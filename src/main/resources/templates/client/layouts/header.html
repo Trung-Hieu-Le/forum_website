@@ -9,10 +9,10 @@
                 <ul class="navbar-nav ms-auto">
                     <th:block th:if="${userAuth == null}">
                         <li class="nav-item">
-                            <a class="nav-link" href="/login">Login</a>
+                            <a class="nav-link" href="/login" th:text="#{navbar.login}">Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/register">Register</a>
+                            <a class="nav-link" href="/register" th:text="#{navbar.register}">Register</a>
                         </li>
                     </th:block>
                     <th:block th:if="${userAuth != null}">
@@ -20,19 +20,17 @@
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
                                 role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <img th:src="@{${userAuth.avatar}}" class="rounded-circle me-2"
-                                    style="width:32px;height:32px;"
+                                    style="width:24px;height:24px;"
                                     onerror="this.onerror=null;this.src='/images/default-avatar.png'">
-                                <span th:text="${userAuth.username}">Username</span>
+                                <span th:text="${userAuth.fullname}">Fullname</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li><a class="dropdown-item" href="/profile">Trang cá nhân</a></li>
-                                <li><a class="dropdown-item" href="/setting">Cài đặt</a></li>
-                                <li><a class="dropdown-item" href="/feedback">Góp ý</a></li>
-                                <li><a class="dropdown-item" href="/manual">Hướng dẫn</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item text-danger" href="/logout">Đăng xuất</a></li>
+                                <li><a class="dropdown-item" href="/profile" th:text="#{navbar.profile}">Profile</a></li>
+                                <li><a class="dropdown-item" href="/setting" th:text="#{navbar.settings}">Settings</a></li>
+                                <li><a class="dropdown-item" href="/feedback" th:text="#{navbar.feedback}">Feedback</a></li>
+                                <li><a class="dropdown-item" href="/manual" th:text="#{navbar.manual}">Manual</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="/logout" th:text="#{navbar.logout}">Logout</a></li>
                             </ul>
                         </li>
                     </th:block>
@@ -42,7 +40,7 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingDropdown">
                             <li class="dropdown-submenu">
-                                <a class="dropdown-item dropdown-toggle" href="#">🌐 Language</a>
+                                <a class="dropdown-item dropdown-toggle" href="#"><i class="fa fa-globe"></i> <span th:text="#{navbar.language.label}">Language</span></a>
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" href="/change-language?lang=vi">VI Tiếng Việt</a></li>
                                     <li><a class="dropdown-item" href="/change-language?lang=en">EN English</a></li>
@@ -50,11 +48,11 @@
                                 </ul>
                             </li>
                             <li class="dropdown-submenu">
-                                <a class="dropdown-item dropdown-toggle" href="#">🎨 Theme</a>
+                                <a class="dropdown-item dropdown-toggle" href="#"><i class="fa fa-tint"></i> <span th:text="#{navbar.theme.label}">Theme</span></a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="/change-theme?theme=light">Light</a></li>
-                                    <li><a class="dropdown-item" href="/change-theme?theme=dark">Dark</a></li>
-                                    <li><a class="dropdown-item" href="/change-theme?theme=darkblue">Dark Blue</a></li>
+                                    <li><a class="dropdown-item" href="/change-theme?theme=light" th:text="#{navbar.theme.light}">Light</a></li>
+                                    <li><a class="dropdown-item" href="/change-theme?theme=dark" th:text="#{navbar.theme.dark}">Dark</a></li>
+                                    <li><a class="dropdown-item" href="/change-theme?theme=darkblue" th:text="#{navbar.theme.darkblue}">Dark Blue</a></li>
                                 </ul>
                             </li>
                         </ul>

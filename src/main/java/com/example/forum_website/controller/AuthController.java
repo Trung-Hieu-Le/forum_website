@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -50,10 +51,11 @@ public class AuthController {
     public ApiResponse login(@RequestBody LoginDto loginDto, HttpServletResponse response) {
         try {
             userService.authenticateAndSetToken(loginDto, response);
-            String message = messageSource.getMessage("login.success", null, LocaleContextHolder.getLocale());
+            String message = getMessage("login.success", null);
             return new ApiResponse("ok", "success", message, "/");
         } catch (Exception e) {
-            return new ApiResponse("error", "danger", e.getMessage(), null);
+            String errorMessage = resolveErrorMessage(e);
+            return new ApiResponse("error", "danger", errorMessage, null);
         }
     }
 
@@ -83,9 +85,11 @@ public class AuthController {
         }
         try {
             userService.registerUser(registerDto);
-            return new ApiResponse("ok", "success", "Đăng ký thành công", "/login");
+            String message = getMessage("register.success", null);
+            return new ApiResponse("ok", "success", message, "/login");
         } catch (Exception e) {
-            return new ApiResponse("error", "danger", e.getMessage(), null);
+            String errorMessage = resolveErrorMessage(e);
+            return new ApiResponse("error", "danger", errorMessage, null);
         }
     }
 
@@ -105,15 +109,17 @@ public class AuthController {
     public ApiResponse initiatePasswordReset(@RequestBody Map<String, String> body, HttpSession session) {
         String email = body.get("email");
         if (email == null || email.isBlank()) {
-            return new ApiResponse("error", "warning", "Email không được để trống", null);
+            String errorMessage = getMessage("forgotPassword.email.notBlank", null);
+            return new ApiResponse("error", "warning", errorMessage, null);
         }
         try {
             String token = userService.initiatePasswordReset(email);
             session.setAttribute("resetPasswordToken", token);
-            return new ApiResponse("ok", "success",
-                    "Xác thực email thành công", "/reset-password");
+            String message = getMessage("forgotPassword.success", null);
+            return new ApiResponse("ok", "success", message, "/reset-password");
         } catch (Exception e) {
-            return new ApiResponse("error", "danger", e.getMessage(), null);
+            String errorMessage = resolveErrorMessage(e);
+            return new ApiResponse("error", "danger", errorMessage, null);
         }
     }
 
@@ -122,7 +128,7 @@ public class AuthController {
         try {
             String token = (String) session.getAttribute("resetPasswordToken");
             if (token == null) {
-                return "redirect:/forgot-password?error=Invalid or expired token";
+                return "redirect:/forgot-password?error=resetPassword.invalidToken";
             }
             model.addAttribute("token", token);
             return "client/reset-password";
@@ -133,18 +139,34 @@ public class AuthController {
 
     @PostMapping("/reset-password")
     @ResponseBody
-    public ApiResponse resetPassword(@RequestBody Map<String, String> body,
-            HttpSession session) {
+    public ApiResponse resetPassword(@RequestBody Map<String, String> body, HttpSession session) {
         try {
             String token = body.get("token");
             String newPassword = body.get("newPassword");
             String confirmPassword = body.get("confirmPassword");
             userService.resetPassword(token, newPassword, confirmPassword);
             session.removeAttribute("resetPasswordToken");
-            return new ApiResponse("ok", "success", "Đổi mật khẩu thành công", "/login");
+            String message = getMessage("resetPassword.success", null);
+            return new ApiResponse("ok", "success", message, "/login");
         } catch (Exception e) {
-            return new ApiResponse("error", "danger", e.getMessage(), null);
+            String errorMessage = resolveErrorMessage(e);
+            return new ApiResponse("error", "danger", errorMessage, null);
         }
+    }
+
+    private String getMessage(String code, Object[] args) {
+        try {
+            return messageSource.getMessage(code, args, LocaleContextHolder.getLocale());
+        } catch (NoSuchMessageException e) {
+            return "Message not found for code: " + code;
+        }
+    }
+
+    private String resolveErrorMessage(Exception e) {
+        String[] parts = e.getMessage().split(",");
+        String messageKey = parts[0];
+        Object[] args = parts.length > 1 ? new Object[]{parts[1]} : null;
+        return getMessage(messageKey, args);
     }
 
     private void clearAuthCookies(HttpServletResponse response) {
