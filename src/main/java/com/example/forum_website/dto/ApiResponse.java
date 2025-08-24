@@ -9,17 +9,9 @@ import lombok.Setter;
 @Setter
 public class ApiResponse {
     private String status;
-    private String errorTag; // info, success, warning, danger
-    private String message;
+    private String errorTag;
     private List<String> messages;
     private String redirectUrl;
-
-    public ApiResponse(String status, String errorTag, String message, String redirectUrl) {
-        this.status = status;
-        this.errorTag = errorTag;
-        this.message = message;
-        this.redirectUrl = redirectUrl;
-    }
 
     public ApiResponse(String status, String errorTag, List<String> messages, String redirectUrl) {
         this.status = status;

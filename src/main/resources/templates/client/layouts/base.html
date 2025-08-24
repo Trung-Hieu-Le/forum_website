@@ -7,11 +7,13 @@
     <header th:replace="~{client/layouts/header :: header}"></header>
     <main>
         <div class="container">
-            <th:block th:replace="~{client/layouts/flash_toast :: noticeScript}"></th:block>
+            <th:block th:replace="~{client/layouts/notice :: noticeScript}"></th:block>
             <div th:replace="~{::content}"></div>
         </div>
     </main>
     <footer th:replace="~{client/layouts/footer :: footer}"></footer>
     <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/toast.js"></script>
+    <script src="/js/authentication.js"></script>
 </body>
 </html>

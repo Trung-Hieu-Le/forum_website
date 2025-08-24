@@ -2,12 +2,11 @@ package com.example.forum_website.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
-import org.springframework.context.MessageSource;
-import org.springframework.context.NoSuchMessageException;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.example.forum_website.util.MessageUtil;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,7 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @Controller
 public class CustomErrorController implements ErrorController {
     @Autowired
-    private MessageSource messageSource;
+    private MessageUtil messageUtil;
 
     @RequestMapping("/error")
     public String handleError(HttpServletRequest request, Model model) {
@@ -44,21 +43,13 @@ public class CustomErrorController implements ErrorController {
             default -> "error.unknown";
         };
 
-        String errorTitle = getMessage("error.title", new Object[]{statusCode});
-        String errorMessage = getMessage(messageKey, null);
+        String errorTitle = messageUtil.getMessage("error.title", new Object[]{statusCode});
+        String errorMessage = messageUtil.getMessage(messageKey, null);
 
         model.addAttribute("statusCode", statusCode);
         model.addAttribute("errorTitle", errorTitle);
         model.addAttribute("errorMessage", errorMessage);
 
         return "error/error";
-    }
-
-    private String getMessage(String code, Object[] args) {
-        try {
-            return messageSource.getMessage(code, args, LocaleContextHolder.getLocale());
-        } catch (NoSuchMessageException e) {
-            return "Message not found for code: " + code;
-        }
     }
 }
