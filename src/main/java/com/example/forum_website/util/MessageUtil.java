@@ -15,7 +15,7 @@ public class MessageUtil {
         try {
             return messageSource.getMessage(code, args, LocaleContextHolder.getLocale());
         } catch (NoSuchMessageException e) {
-            return "Message not found for code: " + code;
+            return code;
         }
     }
 

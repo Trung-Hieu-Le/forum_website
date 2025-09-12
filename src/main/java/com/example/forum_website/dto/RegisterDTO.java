@@ -25,5 +25,4 @@ public class RegisterDto {
     @NotBlank(message = "{register.confirmPassword.notBlank}")
     @Size(min = 6, message = "{register.confirmPassword.size}")
     private String confirmPassword;
-
 }

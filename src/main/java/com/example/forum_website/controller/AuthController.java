@@ -1,14 +1,11 @@
 package com.example.forum_website.controller;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,8 +14,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.example.forum_website.dto.ApiResponse;
 import com.example.forum_website.dto.LoginDto;
 import com.example.forum_website.dto.RegisterDto;
+import com.example.forum_website.dto.ResetPasswordDto;
+import com.example.forum_website.enums.ToastType;
 import com.example.forum_website.service.UserService;
 import com.example.forum_website.util.MessageUtil;
+import java.util.stream.Collectors;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -46,14 +46,25 @@ public class AuthController {
 
     @PostMapping("/login")
     @ResponseBody
-    public ApiResponse login(@RequestBody LoginDto loginDto, HttpServletResponse response) {
+    public ApiResponse login(@Valid @RequestBody LoginDto loginDto, BindingResult result, HttpServletResponse response) {
+        if (result.hasErrors()) {
+            Map<String, String> fieldErrors = result.getFieldErrors()
+                    .stream()
+                    .collect(Collectors.toMap(
+                            error -> error.getField(),
+                            error -> messageUtil.getMessage(error.getDefaultMessage(), null),
+                            (existing, replacement) -> existing + "; " + replacement
+                    ));
+            String validationMessage = messageUtil.getMessage("validation.failed", null);
+            return new ApiResponse("error", ToastType.ERROR, validationMessage, (Map<String, Object>) (Map<?, ?>) fieldErrors);
+        }
         try {
             userService.authenticateAndSetToken(loginDto, response);
             String message = messageUtil.getMessage("login.success", null);
-            return new ApiResponse("ok", "success", List.of(message), "/");
+            return new ApiResponse("ok", ToastType.SUCCESS, message);
         } catch (Exception e) {
             String errorMessage = messageUtil.resolveErrorMessage(e);
-            return new ApiResponse("error", "danger", List.of(errorMessage), null);
+            return new ApiResponse("error", ToastType.ERROR, errorMessage);
         }
     }
 
@@ -75,19 +86,23 @@ public class AuthController {
     public ApiResponse register(@Valid @RequestBody RegisterDto registerDto, BindingResult result,
             HttpServletResponse response) {
         if (result.hasErrors()) {
-            List<String> errs = result.getAllErrors()
+            Map<String, String> fieldErrors = result.getFieldErrors()
                     .stream()
-                    .map(ObjectError::getDefaultMessage)
-                    .collect(Collectors.toList());
-            return new ApiResponse("error", "warning", errs, null);
+                    .collect(Collectors.toMap(
+                            error -> error.getField(),
+                            error -> messageUtil.getMessage(error.getDefaultMessage(), null),
+                            (existing, replacement) -> existing + "; " + replacement
+                    ));
+            String validationMessage = messageUtil.getMessage("validation.failed", null);
+            return new ApiResponse("error", ToastType.ERROR, validationMessage, (Map<String, Object>) (Map<?, ?>) fieldErrors);
         }
         try {
             userService.registerUser(registerDto);
             String message = messageUtil.getMessage("register.success", null);
-            return new ApiResponse("ok", "success", List.of(message), "/login");
+            return new ApiResponse("ok", ToastType.SUCCESS, message);
         } catch (Exception e) {
             String errorMessage = messageUtil.resolveErrorMessage(e);
-            return new ApiResponse("error", "danger", List.of(errorMessage), null);
+            return new ApiResponse("error", ToastType.ERROR, errorMessage);
         }
     }
 
@@ -108,16 +123,16 @@ public class AuthController {
         String email = body.get("email");
         if (email == null || email.isBlank()) {
             String errorMessage = messageUtil.getMessage("forgotPassword.email.notBlank", null);
-            return new ApiResponse("error", "warning", List.of(errorMessage), null);
+            return new ApiResponse("error", ToastType.WARNING, errorMessage);
         }
         try {
             String token = userService.initiatePasswordReset(email);
             session.setAttribute("resetPasswordToken", token);
             String message = messageUtil.getMessage("forgotPassword.success", null);
-            return new ApiResponse("ok", "success", List.of(message), "/reset-password");
+            return new ApiResponse("ok", ToastType.SUCCESS, message);
         } catch (Exception e) {
             String errorMessage = messageUtil.resolveErrorMessage(e);
-            return new ApiResponse("error", "danger", List.of(errorMessage), null);
+            return new ApiResponse("error", ToastType.ERROR, errorMessage);
         }
     }
 
@@ -137,18 +152,26 @@ public class AuthController {
 
     @PostMapping("/reset-password")
     @ResponseBody
-    public ApiResponse resetPassword(@RequestBody Map<String, String> body, HttpSession session) {
+    public ApiResponse resetPassword(@Valid @RequestBody ResetPasswordDto resetPasswordDto, BindingResult result, HttpSession session) {
+        if (result.hasErrors()) {
+            Map<String, String> fieldErrors = result.getFieldErrors()
+                    .stream()
+                    .collect(Collectors.toMap(
+                            error -> error.getField(),
+                            error -> messageUtil.getMessage(error.getDefaultMessage(), null),
+                            (existing, replacement) -> existing + "; " + replacement
+                    ));
+            String validationMessage = messageUtil.getMessage("validation.failed", null);
+            return new ApiResponse("error", ToastType.ERROR, validationMessage, (Map<String, Object>) (Map<?, ?>) fieldErrors);
+        }
         try {
-            String token = body.get("token");
-            String newPassword = body.get("newPassword");
-            String confirmPassword = body.get("confirmPassword");
-            userService.resetPassword(token, newPassword, confirmPassword);
+            userService.resetPassword(resetPasswordDto.getToken(), resetPasswordDto.getNewPassword(), resetPasswordDto.getConfirmPassword());
             session.removeAttribute("resetPasswordToken");
             String message = messageUtil.getMessage("resetPassword.success", null);
-            return new ApiResponse("ok", "success", List.of(message), "/login");
+            return new ApiResponse("ok", ToastType.SUCCESS, message);
         } catch (Exception e) {
             String errorMessage = messageUtil.resolveErrorMessage(e);
-            return new ApiResponse("error", "danger", List.of(errorMessage), null);
+            return new ApiResponse("error", ToastType.ERROR, errorMessage);
         }
     }
 

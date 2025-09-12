@@ -1,6 +1,8 @@
 package com.example.forum_website.dto;
 
-import java.util.List;
+import java.util.Map;
+
+import com.example.forum_website.enums.ToastType;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -9,14 +11,21 @@ import lombok.Setter;
 @Setter
 public class ApiResponse {
     private String status;
-    private String errorTag;
-    private List<String> messages;
-    private String redirectUrl;
+    private ToastType type = ToastType.UNKNOWN;
+    private String message;
+    private Map<String, Object> data;
 
-    public ApiResponse(String status, String errorTag, List<String> messages, String redirectUrl) {
+    public ApiResponse(String status, ToastType type, String message, Map<String, Object> data) {
         this.status = status;
-        this.errorTag = errorTag;
-        this.messages = messages;
-        this.redirectUrl = redirectUrl;
+        this.type = type;
+        this.message = message;
+        this.data = data;
+    }
+
+    public ApiResponse(String status, ToastType type, String message) {
+        this.status = status;
+        this.type = type;
+        this.message = message;
+        this.data = null;
     }
 }
