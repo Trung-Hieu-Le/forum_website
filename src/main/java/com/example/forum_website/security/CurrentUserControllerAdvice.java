@@ -39,7 +39,9 @@ public class CurrentUserControllerAdvice {
                                 user.getUsername(),
                                 user.getRole().name(),
                                 user.getFullname(),
-                                user.getAvatar()))
+                                user.getAvatar(),
+                                user.getEmail(),
+                                user.getPhone()))
                         .orElse(null);
             }
         }

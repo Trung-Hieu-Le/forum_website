@@ -21,6 +21,8 @@ public class ChangePasswordDto {
     @Size(min = 6, message = "{changePassword.confirmPassword.size}")
     private String confirmPassword;
 
+    public ChangePasswordDto() {}
+
     public ChangePasswordDto(String newPassword, String confirmPassword) {
         this.newPassword = newPassword;
         this.confirmPassword = confirmPassword;

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="privacyContent">
+    <div class="row">
+        <div class="col-12">
+            <p class="text-muted mb-4" th:text="#{settings.privacy.description}">Manage password and account security</p>
+            
+            <!-- Security Information -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h6 class="card-title mb-1" th:text="#{settings.privacy.title}">Password</h6>
+                                    <p class="card-text text-muted mb-0">Last changed: <span id="lastPasswordChange">Never</span></p>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#changePasswordModal" th:text="#{settings.privacy.button.changePassword}">Change Password</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Tips -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <h6 class="alert-heading" th:text="#{settings.privacy.securityTips.title}">Security Tips</h6>
+                        <ul class="mb-0">
+                            <li th:text="#{settings.privacy.securityTips.tip1}">Use a strong password with at least 8 characters</li>
+                            <li th:text="#{settings.privacy.securityTips.tip2}">Include a mix of letters, numbers, and symbols</li>
+                            <li th:text="#{settings.privacy.securityTips.tip3}">Don't reuse passwords from other accounts</li>
+                            <li th:text="#{settings.privacy.securityTips.tip4}">Change your password regularly</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

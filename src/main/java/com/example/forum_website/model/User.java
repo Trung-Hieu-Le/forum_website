@@ -23,6 +23,11 @@ public class User {
     private UserRole role;
     private String resetToken;
     private String avatar;
+    private String phone;
+    private boolean emailNewPost = true;
+    private boolean emailReply = true;
+    private boolean emailMention = true;
+    private boolean browserNotifications = false;
 
     public User() {}
 
