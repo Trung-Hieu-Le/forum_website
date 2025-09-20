@@ -97,7 +97,7 @@ public class AuthController {
             return new ApiResponse("error", ToastType.ERROR, validationMessage, (Map<String, Object>) (Map<?, ?>) fieldErrors);
         }
         try {
-            userService.registerUser(registerDto);
+            userService.registerUser(registerDto);  
             String message = messageUtil.getMessage("register.success", null);
             return new ApiResponse("ok", ToastType.SUCCESS, message);
         } catch (Exception e) {

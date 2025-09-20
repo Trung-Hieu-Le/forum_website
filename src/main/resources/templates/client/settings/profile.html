@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="profileContent">
+    <div class="row">
+        <div class="col-12">
+            <p class="text-muted mb-4" th:text="#{settings.profile.description}">Manage your personal information and account</p>
+            
+            <!-- Profile Information Display -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="text-center">
+                        <div class="avatar-container position-relative d-inline-block">
+                            <img th:src="${userAuth?.avatar != null ? '/avatar/' + userAuth.avatar : '/images/default-avatar.png'}" 
+                                 alt="Avatar" 
+                                 class="img-fluid rounded-circle mb-3 avatar-image" 
+                                 style="width: 120px; height: 120px; object-fit: cover; border: 1px solid #aaa; box-shadow: 0 4px 8px rgba(0,0,0,0.3);" 
+                                 id="profileAvatar">
+                            <button type="button" 
+                                    class="btn btn-primary btn-sm avatar-upload-btn position-absolute" 
+                                    onclick="document.getElementById('avatarFileInput').click()"
+                                    style="bottom: 10px; left: 10px; width: 30px; height: 30px; border-radius: 50%; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold;">
+                                +
+                            </button>
+                        </div>
+                        <h6 th:text="#{settings.profile.form.avatar}">Avatar</h6>
+                        <input type="file" id="avatarFileInput" accept="image/*" style="display: none;" onchange="uploadAvatar(this)">
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold" th:text="#{settings.profile.form.username}">Username</label>
+                            <p class="form-control-plaintext" th:text="${userAuth?.username != null ? '@' + userAuth.username : 'N/A'}">@username</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold" th:text="#{settings.profile.form.email}">Email</label>
+                            <p class="form-control-plaintext" th:text="${userAuth?.email != null ? userAuth.email : 'N/A'}">email@example.com</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold" th:text="#{settings.profile.form.fullname}">Full Name</label>
+                            <p class="form-control-plaintext" th:text="${userAuth?.fullname != null ? userAuth.fullname : 'N/A'}">Full Name</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold" th:text="#{settings.profile.form.phone}">Phone</label>
+                            <p class="form-control-plaintext" th:text="${userAuth?.phone != null ? userAuth.phone : 'Not provided'}">Not provided</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#profileEditModal" th:text="#{settings.profile.button.edit}">Edit Profile</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>

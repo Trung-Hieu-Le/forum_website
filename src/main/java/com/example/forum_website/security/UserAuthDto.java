@@ -13,4 +13,6 @@ public class UserAuthDto {
     private String role;
     private String fullname;
     private String avatar;
+    private String email;
+    private String phone;
 }

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{client/layouts/base}">
+<div th:fragment="content">
+    <div class="row">
+        <!-- Settings Sidebar -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0" th:text="#{settings.title}">Settings</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <a href="/settings?tab=profile" 
+                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                           th:classappend="${activeTab == 'profile'} ? 'active bg-primary text-white' : ''"
+                           th:text="#{settings.tab.profile}">Profile</a>
+                        <a href="/settings?tab=privacy" 
+                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                           th:classappend="${activeTab == 'privacy'} ? 'active bg-primary text-white' : ''"
+                           th:text="#{settings.tab.privacy}">Privacy</a>
+                        <a href="/settings?tab=notifications" 
+                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                           th:classappend="${activeTab == 'notifications'} ? 'active bg-primary text-white' : ''"
+                           th:text="#{settings.tab.notifications}">Notifications</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Content -->
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0" th:text="#{settings.tab.profile}" th:if="${activeTab == 'profile'}">Profile</h5>
+                    <h5 class="card-title mb-0" th:text="#{settings.tab.privacy}" th:if="${activeTab == 'privacy'}">Privacy</h5>
+                    <h5 class="card-title mb-0" th:text="#{settings.tab.notifications}" th:if="${activeTab == 'notifications'}">Notifications</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Profile Tab Content -->
+                    <div th:if="${activeTab == 'profile'}">
+                        <div th:replace="~{client/settings/profile :: profileContent}"></div>
+                    </div>
+
+                    <!-- Privacy Tab Content -->
+                    <div th:if="${activeTab == 'privacy'}">
+                        <div th:replace="~{client/settings/privacy :: privacyContent}"></div>
+                    </div>
+
+                    <!-- Notifications Tab Content -->
+                    <div th:if="${activeTab == 'notifications'}">
+                        <div th:replace="~{client/settings/notifications :: notificationsContent}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Edit Modal -->
+    <div class="modal fade" id="profileEditModal" tabindex="-1" aria-labelledby="profileEditModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="profileEditModalLabel" th:text="#{settings.profile.button.edit}">Edit Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="profileEditForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="editUsername" class="form-label" th:text="#{settings.profile.form.username}">Username</label>
+                            <input type="text" class="form-control" id="editUsername" name="username" th:value="${userAuth?.username != null ? userAuth.username : ''}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editEmail" class="form-label" th:text="#{settings.profile.form.email}">Email</label>
+                            <input type="email" class="form-control" id="editEmail" name="email" th:value="${userAuth?.email != null ? userAuth.email : ''}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editPhone" class="form-label" th:text="#{settings.profile.form.phone}">Phone</label>
+                            <input type="tel" class="form-control" id="editPhone" name="phone" th:value="${userAuth?.phone != null ? userAuth.phone : ''}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editFullname" class="form-label" th:text="#{settings.profile.form.fullname}">Full Name</label>
+                            <input type="text" class="form-control" id="editFullname" name="fullname" th:value="${userAuth?.fullname != null ? userAuth.fullname : ''}">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{settings.profile.button.cancel}">Cancel</button>
+                        <button type="submit" class="btn btn-primary" th:text="#{settings.profile.button.save}">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changePasswordModalLabel" th:text="#{settings.privacy.button.changePassword}">Change Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="changePasswordForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="currentPassword" class="form-label" th:text="#{settings.privacy.form.currentPassword}">Current Password</label>
+                            <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label" th:text="#{settings.privacy.form.newPassword}">New Password</label>
+                            <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label" th:text="#{settings.privacy.form.confirmPassword}">Confirm Password</label>
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{settings.privacy.button.cancel}">Cancel</button>
+                        <button type="submit" class="btn btn-primary" th:text="#{settings.privacy.button.save}">Save Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</html>
