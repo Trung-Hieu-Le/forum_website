@@ -28,10 +28,8 @@ $(document).ready(function () {
 });
 
 function clearValidationErrors($form) {
-    $form.find('.is-invalid').each(function() {
-        $(this).removeClass('is-invalid');
-        $(this).next('.text-danger').remove();
-    });
+    $form.find('.is-invalid').removeClass('is-invalid');
+    $form.find('.is-invalid-msg').remove();
 }
 
 function handleValidationErrors($form, resp) {
@@ -42,7 +40,7 @@ function handleValidationErrors($form, resp) {
             const $field = $form.find(`[name="${fieldName}"]`);
             if ($field.length) {
                 $field.addClass('is-invalid');
-                $field.after(`<div class="text-danger">${resp.data[fieldName]}</div>`);
+                $field.after(`<div class="text-danger is-invalid-msg">${resp.data[fieldName]}</div>`);
             }
         });
         return true;

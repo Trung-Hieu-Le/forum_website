@@ -34,7 +34,7 @@ function handleProfileEdit(event) {
     event.preventDefault();
     
     // Clear previous validation errors
-    clearValidationErrors(event.currentTarget);
+    clearSettingsValidationErrors(event.currentTarget);
     
     const formData = new FormData(event.target);
     const profileData = {
@@ -88,7 +88,7 @@ function handlePasswordChange(event) {
     event.preventDefault();
     
     // Clear previous validation errors
-    clearValidationErrors(event.currentTarget);
+    clearSettingsValidationErrors(event.currentTarget);
     
     const formData = new FormData(event.target);
     const passwordData = {
@@ -230,17 +230,17 @@ function updateProfileDisplay(userData) {
     }
 }
 
-function clearValidationErrors(form) {
+function clearSettingsValidationErrors(form) {
     // Check if form is valid and has querySelectorAll method
     if (!form || typeof form.querySelectorAll !== 'function') {
-        console.warn('clearValidationErrors: Invalid form element provided');
+        console.warn('clearSettingsValidationErrors: Invalid form element provided');
         return;
     }
     
     // Clear previous errors
     form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
     form.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
-    form.querySelectorAll('.text-danger').forEach(el => el.remove());
+    form.querySelectorAll('.is-invalid-msg').forEach(el => el.remove());
 }
 
 function displayFieldErrors(errors) {
@@ -254,7 +254,7 @@ function displayFieldErrors(errors) {
         if (field) {
             field.classList.add('is-invalid');
             const errorDiv = document.createElement('div');
-            errorDiv.className = 'invalid-feedback';
+            errorDiv.className = 'invalid-feedback is-invalid-msg';
             errorDiv.textContent = errors[fieldName];
             field.parentNode.appendChild(errorDiv);
         }

@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.forum_website.dto.ChangePasswordDto;
 import com.example.forum_website.dto.ChangeProfileDto;
@@ -81,6 +82,8 @@ public class UserServiceImpl implements UserService {
                 registerDto.getEmail(),
                 passwordEncoder.encode(registerDto.getPassword()),
                 UserRole.USER);
+        user.setFullname(registerDto.getFullname());
+        user.setPhone(registerDto.getPhone());
         userRepository.save(user);
     }
 
@@ -119,17 +122,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void updateProfile(ChangeProfileDto changeProfileDto) throws Exception {
         User currentUser = getCurrentUserInternal();
-        
-        if (changeProfileDto.getUsername() != null && !changeProfileDto.getUsername().isEmpty()) {
-            // Check if username is already taken by another user
-            if (userRepository.findByUsername(changeProfileDto.getUsername()).isPresent() && 
-                !currentUser.getUsername().equals(changeProfileDto.getUsername())) {
-                throw new Exception("register.username.exists");
-            }
-            currentUser.setUsername(changeProfileDto.getUsername());
-        }
         
         if (changeProfileDto.getEmail() != null && !changeProfileDto.getEmail().isEmpty()) {
             // Check if email is already taken by another user
@@ -156,6 +151,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void changePassword(ChangePasswordDto changePasswordDto) throws Exception {
         User currentUser = getCurrentUserInternal();
         
@@ -175,6 +171,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void updateNotificationSettings(Map<String, Object> notificationSettings) throws Exception {
         User currentUser = getCurrentUserInternal();
         
@@ -189,6 +186,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void updateAvatar(String filename) throws Exception {
         User currentUser = getCurrentUserInternal();
         currentUser.setAvatar(filename);

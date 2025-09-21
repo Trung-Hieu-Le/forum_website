@@ -12,6 +12,14 @@
             <input type="email" id="email" th:field="*{email}" class="form-control" required>
         </div>
         <div class="mb-3">
+            <label for="fullname" class="form-label" th:text="#{register.input.fullname}">Full Name</label>
+            <input type="text" id="fullname" th:field="*{fullname}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="phone" class="form-label" th:text="#{register.input.phone}">Phone</label>
+            <input type="tel" id="phone" th:field="*{phone}" class="form-control">
+        </div>
+        <div class="mb-3">
             <label for="password" class="form-label" th:text="#{register.input.password}">Password</label>
             <input type="password" id="password" th:field="*{password}" class="form-control" required>
         </div>

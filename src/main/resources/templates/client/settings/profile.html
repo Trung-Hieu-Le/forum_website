@@ -10,7 +10,8 @@
                 <div class="col-md-3">
                     <div class="text-center">
                         <div class="avatar-container position-relative d-inline-block">
-                            <img th:src="${userAuth?.avatar != null ? '/avatar/' + userAuth.avatar : '/images/default-avatar.png'}" 
+                            <img th:src="${userAuth?.avatar != null ? '/avatar/' + userAuth.avatar : '/avatar/default-avatar.png'}"
+                                 onerror="this.onerror=null;this.src='/avatar/default-avatar.png'" 
                                  alt="Avatar" 
                                  class="img-fluid rounded-circle mb-3 avatar-image" 
                                  style="width: 120px; height: 120px; object-fit: cover; border: 1px solid #aaa; box-shadow: 0 4px 8px rgba(0,0,0,0.3);" 

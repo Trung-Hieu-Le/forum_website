@@ -38,7 +38,7 @@ public class AuthController {
         try {
             clearAuthCookies(response);
             model.addAttribute("loginDto", new LoginDto());
-            return "client/login";
+            return "client/auth/login";
         } catch (Exception e) {
             return "redirect:/error";
         }
@@ -75,7 +75,7 @@ public class AuthController {
             if (!model.containsAttribute("registerDto")) {
                 model.addAttribute("registerDto", new RegisterDto());
             }
-            return "client/register";
+            return "client/auth/register";
         } catch (Exception e) {
             return "redirect:/error";
         }
@@ -111,7 +111,7 @@ public class AuthController {
         try {
             clearAuthCookies(response);
             model.addAttribute("email", "");
-            return "client/forgot-password";
+            return "client/auth/forgot-password";
         } catch (Exception e) {
             return "redirect:/error";
         }
@@ -144,7 +144,7 @@ public class AuthController {
                 return "redirect:/forgot-password?error=resetPassword.invalidToken";
             }
             model.addAttribute("token", token);
-            return "client/reset-password";
+            return "client/auth/reset-password";
         } catch (Exception e) {
             return "redirect:/error";
         }

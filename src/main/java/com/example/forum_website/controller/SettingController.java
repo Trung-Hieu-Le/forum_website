@@ -106,7 +106,7 @@ public class SettingController {
             }
         }
         
-        return "client/settings";
+        return "client/settings/settings";
     }
 
     // Update profile endpoint

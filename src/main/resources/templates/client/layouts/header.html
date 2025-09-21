@@ -19,9 +19,9 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
                                 role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img th:src="@{${userAuth.avatar}}" class="rounded-circle me-2"
+                                <img th:src="@{${'/avatar/' + userAuth.avatar}}" class="rounded-circle me-2"
                                     style="width:24px;height:24px;"
-                                    onerror="this.onerror=null;this.src='/images/default-avatar.png'">
+                                    onerror="this.onerror=null;this.src='/avatar/default-avatar.png'">
                                 <span th:text="${userAuth.fullname}">Fullname</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">

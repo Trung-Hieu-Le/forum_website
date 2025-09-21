@@ -2,6 +2,7 @@ package com.example.forum_website.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import lombok.Getter;
@@ -17,6 +18,11 @@ public class RegisterDto {
     @NotBlank(message = "{register.email.notBlank}")
     @Email(message = "{register.email.invalid}")
     private String email;
+
+    private String fullname;
+
+    @Pattern(regexp = "^[0-9]{10,11}$", message = "{register.phone.invalid}")
+    private String phone;
 
     @NotBlank(message = "{register.password.notBlank}")
     @Size(min = 6, message = "{register.password.size}")
