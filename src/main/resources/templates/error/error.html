@@ -3,6 +3,6 @@
 <div th:fragment="content">
     <h1>[[${statusCode}]] - [[${errorTitle}]]</h1>
     <p>[[${errorMessage}]]</p>
-    <button onclick="history.back()">Quay lại</button>
+    <button onclick="history.back()" class="btn btn-primary" th:text="#{error.button.back}"></button>
 </div>
 </html>

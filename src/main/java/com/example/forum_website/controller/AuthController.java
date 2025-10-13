@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.example.forum_website.constant.JwtConstants;
 import com.example.forum_website.dto.ApiResponse;
 import com.example.forum_website.dto.LoginDto;
 import com.example.forum_website.dto.RegisterDto;
@@ -176,14 +177,14 @@ public class AuthController {
     }
 
     private void clearAuthCookies(HttpServletResponse response) {
-        Cookie tokenCookie = new Cookie("tokenAuth", null);
-        tokenCookie.setPath("/");
+        Cookie tokenCookie = new Cookie(JwtConstants.TOKEN_COOKIE_NAME, null);
+        tokenCookie.setPath(JwtConstants.COOKIE_PATH);
         tokenCookie.setMaxAge(0);
         tokenCookie.setHttpOnly(true);
         response.addCookie(tokenCookie);
 
-        Cookie usernameCookie = new Cookie("usernameAuth", null);
-        usernameCookie.setPath("/");
+        Cookie usernameCookie = new Cookie(JwtConstants.USERNAME_COOKIE_NAME, null);
+        usernameCookie.setPath(JwtConstants.COOKIE_PATH);
         usernameCookie.setMaxAge(0);
         usernameCookie.setHttpOnly(true);
         response.addCookie(usernameCookie);

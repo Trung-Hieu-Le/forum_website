@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.example.forum_website.constant.AppConstants;
 import com.example.forum_website.service.ThreadService;
 import com.example.forum_website.model.Thread;
 
@@ -19,7 +20,7 @@ public class HomeController {
     @Autowired
     private ThreadService threadService;
 
-    @Value("${thread.page.size}")
+    @Value("${thread.page.size:" + AppConstants.DEFAULT_THREAD_PAGE_SIZE + "}")
     private int pageSize;
 
     @GetMapping({"/", "/home"})

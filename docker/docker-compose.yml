@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # MySQL Database Service
+  mysql:
+    image: mysql:8.0
+    container_name: forum-website-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: testdb_spring
+      MYSQL_ROOT_PASSWORD: rootpassword
+      TZ: Asia/Ho_Chi_Minh
+    ports:
+      - "3307:3306"
+    volumes:
+      - forum-mysql-data:/var/lib/mysql
+    networks:
+      - forum-network
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  # Spring Boot Application Service
+  app:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    image: forum-website-app:latest
+    container_name: forum-website-app
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    environment:
+      # Override database connection only (localhost -> mysql container)
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/testdb_spring?createDatabaseIfNotExist=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: rootpassword
+    ports:
+      - "8081:8081"
+    volumes:
+      - ../src/main/resources/static/avatar:/app/resources/static/avatar
+    networks:
+      - forum-network
+
+# Volumes for persistent data
+volumes:
+  forum-mysql-data:
+    driver: local
+
+# Networks
+networks:
+  forum-network:
+    driver: bridge
+

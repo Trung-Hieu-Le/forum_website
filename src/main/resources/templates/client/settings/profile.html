@@ -3,7 +3,7 @@
 <div th:fragment="profileContent">
     <div class="row">
         <div class="col-12">
-            <p class="text-muted mb-4" th:text="#{settings.profile.description}">Manage your personal information and account</p>
+            <p class="text-muted mb-4" th:text="#{settings.profile.description}"></p>
             
             <!-- Profile Information Display -->
             <div class="row mb-4">
@@ -23,27 +23,27 @@
                                 +
                             </button>
                         </div>
-                        <h6 th:text="#{settings.profile.form.avatar}">Avatar</h6>
+                        <h6 th:text="#{settings.profile.form.avatar}"></h6>
                         <input type="file" id="avatarFileInput" accept="image/*" style="display: none;" onchange="uploadAvatar(this)">
                     </div>
                 </div>
                 <div class="col-md-9">
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold" th:text="#{settings.profile.form.username}">Username</label>
-                            <p class="form-control-plaintext" th:text="${userAuth?.username != null ? '@' + userAuth.username : 'N/A'}">@username</p>
+                            <label class="form-label fw-bold" th:text="#{settings.profile.form.username}"></label>
+                            <p class="form-control-plaintext" th:text="${userAuth?.username != null ? '@' + userAuth.username : 'N/A'}"></p>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold" th:text="#{settings.profile.form.email}">Email</label>
-                            <p class="form-control-plaintext" th:text="${userAuth?.email != null ? userAuth.email : 'N/A'}">email@example.com</p>
+                            <label class="form-label fw-bold" th:text="#{settings.profile.form.email}"></label>
+                            <p class="form-control-plaintext" th:text="${userAuth?.email != null ? userAuth.email : 'N/A'}"></p>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold" th:text="#{settings.profile.form.fullname}">Full Name</label>
-                            <p class="form-control-plaintext" th:text="${userAuth?.fullname != null ? userAuth.fullname : 'N/A'}">Full Name</p>
+                            <label class="form-label fw-bold" th:text="#{settings.profile.form.fullname}"></label>
+                            <p class="form-control-plaintext" th:text="${userAuth?.fullname != null ? userAuth.fullname : 'N/A'}"></p>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold" th:text="#{settings.profile.form.phone}">Phone</label>
-                            <p class="form-control-plaintext" th:text="${userAuth?.phone != null ? userAuth.phone : 'Not provided'}">Not provided</p>
+                            <label class="form-label fw-bold" th:text="#{settings.profile.form.phone}"></label>
+                            <p class="form-control-plaintext" th:text="${userAuth?.phone != null ? userAuth.phone : 'Not provided'}"></p>
                         </div>
                     </div>
                 </div>
@@ -51,7 +51,7 @@
 
             <!-- Action Buttons -->
             <div class="d-flex justify-content-end gap-2">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#profileEditModal" th:text="#{settings.profile.button.edit}">Edit Profile</button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#profileEditModal" th:text="#{settings.profile.button.edit}"></button>
             </div>
         </div>
     </div>

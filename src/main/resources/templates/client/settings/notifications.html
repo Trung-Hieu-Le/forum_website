@@ -3,25 +3,25 @@
 <div th:fragment="notificationsContent">
     <div class="row">
         <div class="col-12">
-            <p class="text-muted mb-4" th:text="#{settings.notifications.description}">Manage notification settings</p>
+            <p class="text-muted mb-4" th:text="#{settings.notifications.description}"></p>
             
             <!-- Email Notifications -->
             <div class="card mb-4">
                 <div class="card-header">
-                    <h6 class="card-title mb-0" th:text="#{settings.notifications.email.label}">Email Notifications</h6>
+                    <h6 class="card-title mb-0" th:text="#{settings.notifications.email.label}"></h6>
                 </div>
                 <div class="card-body">
                     <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="emailNewPost" name="emailNewPost" th:checked="${notificationSettings?.emailNewPost != null ? notificationSettings.emailNewPost : true}">
-                        <label class="form-check-label" for="emailNewPost" th:text="#{settings.notifications.email.newPost}">New Post Notifications</label>
+                        <input class="form-check-input" type="checkbox" id="emailNewPost" name="emailNewPost">
+                        <label class="form-check-label" for="emailNewPost" th:text="#{settings.notifications.email.newPost}"></label>
                     </div>
                     <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="emailReply" name="emailReply" th:checked="${notificationSettings?.emailReply != null ? notificationSettings.emailReply : true}">
-                        <label class="form-check-label" for="emailReply" th:text="#{settings.notifications.email.reply}">Reply Notifications</label>
+                        <input class="form-check-input" type="checkbox" id="emailReply" name="emailReply">
+                        <label class="form-check-label" for="emailReply" th:text="#{settings.notifications.email.reply}"></label>
                     </div>
                     <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="emailMention" name="emailMention" th:checked="${notificationSettings?.emailMention != null ? notificationSettings.emailMention : true}">
-                        <label class="form-check-label" for="emailMention" th:text="#{settings.notifications.email.mention}">Mention Notifications</label>
+                        <input class="form-check-input" type="checkbox" id="emailMention" name="emailMention">
+                        <label class="form-check-label" for="emailMention" th:text="#{settings.notifications.email.mention}"></label>
                     </div>
                 </div>
             </div>
@@ -29,22 +29,20 @@
             <!-- Browser Notifications -->
             <div class="card mb-4">
                 <div class="card-header">
-                    <h6 class="card-title mb-0" th:text="#{settings.notifications.browser.label}">Browser Notifications</h6>
+                    <h6 class="card-title mb-0" th:text="#{settings.notifications.browser.label}"></h6>
                 </div>
                 <div class="card-body">
                     <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="browserNotifications" name="browserNotifications" th:checked="${notificationSettings?.browserNotifications != null ? notificationSettings.browserNotifications : false}">
-                        <label class="form-check-label" for="browserNotifications" th:text="#{settings.notifications.browser.enable}">Enable Browser Notifications</label>
+                        <input class="form-check-input" type="checkbox" id="browserNotifications" name="browserNotifications">
+                        <label class="form-check-label" for="browserNotifications" th:text="#{settings.notifications.browser.enable}"></label>
                     </div>
-                    <div class="alert alert-warning" id="browserNotificationAlert" style="display: none;">
-                        <small>Browser notifications are not supported or blocked by your browser. Please check your browser settings.</small>
-                    </div>
+                    <div class="alert alert-warning" id="browserNotificationAlert" style="display: none;" th:text="#{settings.notifications.browser.notSupported}"></div>
                 </div>
             </div>
 
             <!-- Save Button -->
             <div class="d-flex justify-content-end">
-                <button type="button" class="btn btn-primary" id="saveNotificationSettings" th:text="#{settings.notifications.button.save}">Save Settings</button>
+                <button type="button" class="btn btn-primary" id="saveNotificationSettings" th:text="#{settings.notifications.button.save}"></button>
             </div>
         </div>
     </div>

@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.example.forum_website.constant.JwtConstants;
 import com.example.forum_website.security.JwtAuthenticationFilter;
 
 import jakarta.servlet.RequestDispatcher;
@@ -32,7 +33,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/profile/**", "/settings/**", "/home2").authenticated()
+                .requestMatchers("/profile/**", "/settings/**", "/api/settings/**", "/home2").authenticated()
                 .requestMatchers("/admin/**", "/home3").hasRole("ADMIN")
                 .anyRequest().permitAll()
             )
@@ -47,9 +48,9 @@ public class SecurityConfig {
             .logout(logout -> logout 
                 .logoutUrl("/logout")
                 .logoutSuccessHandler((request, response, authentication) -> {
-                    Cookie cookie = new Cookie("tokenAuth", null);
+                    Cookie cookie = new Cookie(JwtConstants.TOKEN_COOKIE_NAME, null);
                     cookie.setMaxAge(0);
-                    cookie.setPath("/");
+                    cookie.setPath(JwtConstants.COOKIE_PATH);
                     response.addCookie(cookie);
                     response.sendRedirect("/login");
                 })

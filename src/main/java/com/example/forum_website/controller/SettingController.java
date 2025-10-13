@@ -27,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
+import com.example.forum_website.constant.AppConstants;
 import com.example.forum_website.dto.ApiResponse;
 import com.example.forum_website.dto.ChangePasswordDto;
 import com.example.forum_website.dto.ChangeProfileDto;
@@ -47,12 +48,12 @@ public class SettingController {
     @Autowired
     private MessageUtil messageUtil;
 
-    @Value("${app.upload.dir:src/main/resources/static/avatar}")
+    @Value("${app.upload.dir:" + AppConstants.DEFAULT_AVATAR_UPLOAD_DIR + "}")
     private String uploadDir;
 
-    private static final List<String> SUPPORTED_LANGUAGES = List.of("vi", "en", "ja");
-    private static final List<String> SUPPORTED_THEMES = List.of("light", "dark", "darkblue");
-    private static final List<String> ALLOWED_IMAGE_TYPES = List.of("image/jpeg", "image/png", "image/gif", "image/webp");
+    private static final List<String> SUPPORTED_LANGUAGES = List.of(AppConstants.SUPPORTED_LANGUAGES);
+    private static final List<String> SUPPORTED_THEMES = List.of(AppConstants.SUPPORTED_THEMES);
+    private static final List<String> ALLOWED_IMAGE_TYPES = List.of(AppConstants.ALLOWED_IMAGE_TYPES);
 
     @GetMapping("/change-language")
     public String changeLanguage(HttpServletRequest request, HttpServletResponse response, @RequestParam String lang) {
@@ -78,39 +79,38 @@ public class SettingController {
         return "redirect:" + Optional.ofNullable(request.getHeader("Referer")).orElse("/");
     }
 
+    // Get current user data as JSON
+    @GetMapping("/api/settings/current-user")
+    @ResponseBody
+    public ApiResponse getCurrentUserData() {
+        try {
+            var user = userService.getCurrentUser();
+            Map<String, Object> userData = Map.of(
+                "id", user.getId(),
+                "username", user.getUsername(),
+                "email", user.getEmail(),
+                "phone", user.getPhone() != null ? user.getPhone() : "",
+                "fullname", user.getFullname() != null ? user.getFullname() : "",
+                "avatar", user.getAvatar() != null ? user.getAvatar() : "default-avatar.png"
+            );
+            return new ApiResponse("ok", ToastType.SUCCESS, null, userData);
+        } catch (Exception e) {
+            String errorMessage = messageUtil.resolveErrorMessage(e);
+            return new ApiResponse("error", ToastType.ERROR, errorMessage);
+        }
+    }
+
     // Settings page with tab support
     @GetMapping("/settings")
     public String settingsPage(@RequestParam(defaultValue = "profile") String tab, Model model) {
         model.addAttribute("activeTab", tab);
         model.addAttribute("changeProfileDto", new ChangeProfileDto());
         model.addAttribute("changePasswordDto", new ChangePasswordDto());
-        
-        // Add notification settings for notifications tab
-        if ("notifications".equals(tab)) {
-            try {
-                var user = userService.getCurrentUser();
-                model.addAttribute("notificationSettings", Map.of(
-                    "emailNewPost", user.isEmailNewPost(),
-                    "emailReply", user.isEmailReply(),
-                    "emailMention", user.isEmailMention(),
-                    "browserNotifications", user.isBrowserNotifications()
-                ));
-            } catch (Exception e) {
-                // Default values if user not found
-                model.addAttribute("notificationSettings", Map.of(
-                    "emailNewPost", true,
-                    "emailReply", true,
-                    "emailMention", true,
-                    "browserNotifications", false
-                ));
-            }
-        }
-        
         return "client/settings/settings";
     }
 
     // Update profile endpoint
-    @PostMapping("/settings/profile")
+    @PostMapping("/api/settings/profile")
     @ResponseBody
     public ApiResponse updateProfile(@Valid @RequestBody ChangeProfileDto changeProfileDto, BindingResult result) {
         if (result.hasErrors()) {
@@ -135,7 +135,7 @@ public class SettingController {
     }
 
     // Change password endpoint
-    @PostMapping("/settings/password")
+    @PostMapping("/api/settings/password")
     @ResponseBody
     public ApiResponse changePassword(@Valid @RequestBody ChangePasswordDto changePasswordDto, BindingResult result) {
         if (result.hasErrors()) {
@@ -159,8 +159,27 @@ public class SettingController {
         }
     }
 
+    // Get notification settings endpoint
+    @GetMapping("/api/settings/notifications")
+    @ResponseBody
+    public ApiResponse getNotificationSettings() {
+        try {
+            var user = userService.getCurrentUser();
+            Map<String, Object> notificationSettings = Map.of(
+                "emailNewPost", user.isEmailNewPost(),
+                "emailReply", user.isEmailReply(),
+                "emailMention", user.isEmailMention(),
+                "browserNotifications", user.isBrowserNotifications()
+            );
+            return new ApiResponse("ok", ToastType.SUCCESS, null, notificationSettings);
+        } catch (Exception e) {
+            String errorMessage = messageUtil.resolveErrorMessage(e);
+            return new ApiResponse("error", ToastType.ERROR, errorMessage);
+        }
+    }
+
     // Update notification settings endpoint
-    @PostMapping("/settings/notifications")
+    @PostMapping("/api/settings/notifications")
     @ResponseBody
     public ApiResponse updateNotifications(@RequestBody Map<String, Object> notificationSettings) {
         try {
@@ -174,7 +193,7 @@ public class SettingController {
     }
 
     // Upload avatar endpoint
-    @PostMapping(value = "/settings/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/api/settings/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
     public ApiResponse uploadAvatar(@RequestParam("avatar") MultipartFile file) {
         try {
@@ -188,7 +207,7 @@ public class SettingController {
                 return new ApiResponse("error", ToastType.ERROR, message);
             }
 
-            if (file.getSize() > 5 * 1024 * 1024) { // 5MB limit
+            if (file.getSize() > AppConstants.MAX_AVATAR_FILE_SIZE) {
                 String message = messageUtil.getMessage("avatar.upload.tooLarge", null);
                 return new ApiResponse("error", ToastType.ERROR, message);
             }
