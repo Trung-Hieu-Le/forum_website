@@ -1,63 +1,98 @@
 <header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container">
-            <a class="navbar-brand" href="/" th:text="#{navbar.brand}"></a>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow">
+        <div class="container-fluid">
+            <!-- Left side: Logo and Search -->
+            <div class="d-flex align-items-center flex-grow-1">
+                <a class="navbar-brand me-3" href="/">
+                    <img src="/images/default-logo.jpg" alt="Logo" style="height: 40px;">
+                </a>
+                <form class="d-flex search-form flex-grow-1" style="max-width: 500px;">
+                    <input class="form-control" type="search" placeholder="Search..." aria-label="Search">
+                </form>
+            </div>
+
+            <!-- Mobile toggle button -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
+            <!-- Right side: Icon Buttons and User Menu -->
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <th:block th:if="${userAuth == null}">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/login" th:text="#{navbar.login}"></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/register" th:text="#{navbar.register}"></a>
-                        </li>
-                    </th:block>
-                    <th:block th:if="${userAuth != null}">
+                <div class="d-flex align-items-center ms-auto">
+                    <!-- Icon Buttons with Tooltips -->
+                    <div class="icon-buttons d-flex align-items-center me-3">
+                        <a href="/" class="icon-btn" title="Home">
+                            <i class="fa fa-home"></i>
+                            <span class="icon-text" th:text="#{navbar.home}"></span>
+                        </a>
+                        <a href="/groups" class="icon-btn" title="Groups">
+                            <i class="fa fa-users"></i>
+                            <span class="icon-text" th:text="#{navbar.groups}"></span>
+                        </a>
+                        <a href="/chat" class="icon-btn" title="Chat">
+                            <i class="fa fa-comments"></i>
+                            <span class="icon-text" th:text="#{navbar.chat}"></span>
+                        </a>
+                        <a href="/extensions" class="icon-btn" title="Extensions">
+                            <i class="fa fa-puzzle-piece"></i>
+                            <span class="icon-text" th:text="#{navbar.extensions}"></span>
+                        </a>
+                    </div>
+
+                    <!-- User Menu -->
+                    <ul class="navbar-nav">
+                        <th:block th:if="${userAuth == null}">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/login" th:text="#{navbar.login}"></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/register" th:text="#{navbar.register}"></a>
+                            </li>
+                        </th:block>
+                        <th:block th:if="${userAuth != null}">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
+                                    role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <img th:src="@{${'/avatar/' + userAuth.avatar}}" alt="Avatar" class="rounded-circle me-2"
+                                        style="width:24px;height:24px;"
+                                        onerror="this.onerror=null;this.src='/avatar/default-avatar.png'">
+                                    <span th:text="${userAuth.fullname}"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li><a class="dropdown-item" href="/profile" th:text="#{navbar.profile}"></a></li>
+                                    <li><a class="dropdown-item" href="/settings" th:text="#{navbar.settings}"></a></li>
+                                    <li><a class="dropdown-item" href="/feedback" th:text="#{navbar.feedback}"></a></li>
+                                    <li><a class="dropdown-item" href="/manual" th:text="#{navbar.manual}"></a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="/logout" th:text="#{navbar.logout}"></a></li>
+                                </ul>
+                            </li>
+                        </th:block>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
-                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img th:src="@{${'/avatar/' + userAuth.avatar}}" alt="Avatar" class="rounded-circle me-2"
-                                    style="width:24px;height:24px;"
-                                    onerror="this.onerror=null;this.src='/avatar/default-avatar.png'">
-                                <span th:text="${userAuth.fullname}"></span>
+                            <a class="nav-link dropdown-toggle" href="#" id="settingDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fa fa-cog" aria-hidden="true"></i>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li><a class="dropdown-item" href="/profile" th:text="#{navbar.profile}"></a></li>
-                                <li><a class="dropdown-item" href="/settings" th:text="#{navbar.settings}"></a></li>
-                                <li><a class="dropdown-item" href="/feedback" th:text="#{navbar.feedback}"></a></li>
-                                <li><a class="dropdown-item" href="/manual" th:text="#{navbar.manual}"></a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="/logout" th:text="#{navbar.logout}"></a></li>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingDropdown">
+                                <li class="dropdown-submenu">
+                                    <a class="dropdown-item dropdown-toggle" href="#"><i class="fa fa-globe"></i> <span th:text="#{navbar.language.label}"></span></a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="/change-language?lang=vi" th:text="#{navbar.language.vi}"></a></li>
+                                        <li><a class="dropdown-item" href="/change-language?lang=en" th:text="#{navbar.language.en}"></a></li>
+                                        <li><a class="dropdown-item" href="/change-language?lang=ja" th:text="#{navbar.language.ja}"></a></li>
+                                    </ul>
+                                </li>
+                                <li class="dropdown-submenu">
+                                    <a class="dropdown-item dropdown-toggle" href="#"><i class="fa fa-tint"></i> <span th:text="#{navbar.theme.label}"></span></a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="/change-theme?theme=light" th:text="#{navbar.theme.light}"></a></li>
+                                        <li><a class="dropdown-item" href="/change-theme?theme=dark" th:text="#{navbar.theme.dark}"></a></li>
+                                        <li><a class="dropdown-item" href="/change-theme?theme=darkblue" th:text="#{navbar.theme.darkblue}"></a></li>
+                                    </ul>
+                                </li>
                             </ul>
                         </li>
-                    </th:block>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="settingDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fa fa-cog" aria-hidden="true"></i>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingDropdown">
-                            <li class="dropdown-submenu">
-                                <a class="dropdown-item dropdown-toggle" href="#"><i class="fa fa-globe"></i> <span th:text="#{navbar.language.label}"></span></a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="/change-language?lang=vi" th:text="#{navbar.language.vi}"></a></li>
-                                    <li><a class="dropdown-item" href="/change-language?lang=en" th:text="#{navbar.language.en}"></a></li>
-                                    <li><a class="dropdown-item" href="/change-language?lang=ja" th:text="#{navbar.language.ja}"></a></li>
-                                </ul>
-                            </li>
-                            <li class="dropdown-submenu">
-                                <a class="dropdown-item dropdown-toggle" href="#"><i class="fa fa-tint"></i> <span th:text="#{navbar.theme.label}"></span></a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="/change-theme?theme=light" th:text="#{navbar.theme.light}"></a></li>
-                                    <li><a class="dropdown-item" href="/change-theme?theme=dark" th:text="#{navbar.theme.dark}"></a></li>
-                                    <li><a class="dropdown-item" href="/change-theme?theme=darkblue" th:text="#{navbar.theme.darkblue}"></a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
+                    </ul>
+                </div>
             </div>
         </div>
     </nav>

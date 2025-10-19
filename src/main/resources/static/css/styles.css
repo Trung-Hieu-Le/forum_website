@@ -1,3 +1,16 @@
+/* Sticky Header */
+header {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+}
+
+.navbar.sticky-top {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+}
+
 .dropdown-submenu {
     position: relative;
 }
@@ -48,6 +61,108 @@
     left: 0;
     right: 0;
     background-color: unset;
+}
+
+/* Icon Buttons */
+.icon-buttons {
+    gap: 8px;
+}
+
+.icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #f8f9fa;
+    color: #495057;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 18px;
+}
+
+.icon-btn:hover {
+    background-color: #e9ecef;
+    color: #212529;
+    transform: scale(1.1);
+}
+
+.icon-btn i {
+    line-height: 1;
+}
+
+.icon-btn .icon-text {
+    display: none;
+}
+
+/* Responsive styles for mobile */
+@media (max-width: 991px) {
+    .navbar-collapse {
+        margin-top: 1rem;
+    }
+    
+    /* Main container stacks vertically */
+    .navbar-collapse .d-flex {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        width: 100%;
+        gap: 1rem;
+    }
+    
+    /* Icon buttons stack vertically */
+    .icon-buttons {
+        flex-direction: column !important;
+        width: 100%;
+        gap: 0.5rem;
+        margin-right: 0 !important;
+        margin-bottom: 1rem;
+    }
+    
+    .icon-btn {
+        width: 100%;
+        height: auto;
+        border-radius: 0.25rem;
+        padding: 0.5rem 1rem;
+        justify-content: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .icon-btn .icon-text {
+        display: inline;
+        font-size: 16px;
+    }
+    
+    .icon-btn:hover {
+        transform: none;
+    }
+    
+    /* Navbar nav items stack vertically but keep user dropdown content horizontal */
+    .navbar-nav {
+        flex-direction: column !important;
+        width: 100%;
+    }
+    
+    /* Keep avatar+username+arrow horizontal inside dropdown */
+    .nav-item.dropdown .nav-link {
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        padding: 0.5rem 1rem;
+        width: 100%;
+    }
+}
+
+/* Search Form */
+.search-form input {
+    border-radius: 20px;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.search-form input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    border-color: #80bdff;
 }
 
 html,
