@@ -24,6 +24,11 @@ import com.example.forum_website.model.User;
 import com.example.forum_website.repository.UserRepository;
 import com.example.forum_website.security.JwtUtil;
 import com.example.forum_website.service.UserService;
+import com.example.forum_website.exception.AuthException;
+import com.example.forum_website.exception.DuplicateResourceException;
+import com.example.forum_website.exception.InvalidTokenException;
+import com.example.forum_website.exception.UserNotFoundException;
+import com.example.forum_website.exception.ValidationException;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -44,13 +49,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void authenticateAndSetToken(LoginDto loginDto, HttpServletResponse response) throws Exception {
+    public void authenticateAndSetToken(LoginDto loginDto, HttpServletResponse response) {
         try {
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
             UserDetails userDetails = (UserDetails) auth.getPrincipal();
             User user = userRepository.findByUsername(userDetails.getUsername())
-                    .orElseThrow(() -> new RuntimeException("auth.userNotFound"));
+                    .orElseThrow(() -> new UserNotFoundException("auth.userNotFound"));
             String token = jwtUtil.generateToken(user.getId());
             Cookie cookie = new Cookie("tokenAuth", token);
             cookie.setPath("/");
@@ -58,24 +63,24 @@ public class UserServiceImpl implements UserService {
             cookie.setMaxAge((int) (jwtUtil.getExpiration() / 1000));
             response.addCookie(cookie);
         } catch (BadCredentialsException e) {
-            throw new Exception("auth.invalid");
+            throw new AuthException("auth.invalid");
         } catch (LockedException e) {
-            throw new Exception("auth.locked");
+            throw new AuthException("auth.locked");
         } catch (AuthenticationException e) {
-            throw new Exception("auth.failed");
+            throw new AuthException("auth.failed");
         }
     }
 
     @Override
-    public void registerUser(RegisterDto registerDto) throws Exception {
+    public void registerUser(RegisterDto registerDto) {
         if (!registerDto.getPassword().equals(registerDto.getConfirmPassword())) {
-            throw new Exception("register.passwordsNotMatch");
+            throw new ValidationException("register.passwordsNotMatch");
         }
         if (userRepository.findByUsername(registerDto.getUsername()).isPresent()) {
-            throw new Exception("register.username.exists");
+            throw new DuplicateResourceException("register.username.exists");
         }
         if (userRepository.findByEmail(registerDto.getEmail()).isPresent()) {
-            throw new Exception("register.email.exists");
+            throw new DuplicateResourceException("register.email.exists");
         }
         User user = new User(
                 registerDto.getUsername(),
@@ -88,9 +93,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String initiatePasswordReset(String email) throws Exception {
+    public String initiatePasswordReset(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new Exception("forgotPassword.emailNotFound," + email));
+                .orElseThrow(() -> new UserNotFoundException("forgotPassword.emailNotFound," + email));
         String resetToken = UUID.randomUUID().toString();
         user.setResetToken(resetToken);
         userRepository.save(user);
@@ -98,39 +103,39 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void resetPassword(String token, String newPassword, String confirmPassword) throws Exception {
+    public void resetPassword(String token, String newPassword, String confirmPassword) {
         if (!newPassword.equals(confirmPassword)) {
-            throw new Exception("resetPassword.passwordsNotMatch");
+            throw new ValidationException("resetPassword.passwordsNotMatch");
         }
         User user = userRepository.findByResetToken(token)
-                .orElseThrow(() -> new Exception("resetPassword.invalidToken"));
+                .orElseThrow(() -> new InvalidTokenException("resetPassword.invalidToken"));
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setResetToken(null);
         userRepository.save(user);
     }
 
     @Override
-    public User getUserById(Long userId) throws Exception {
+    public User getUserById(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new Exception("user.notFoundById," + userId));
+                .orElseThrow(() -> new UserNotFoundException("user.notFoundById," + userId));
     }
 
     @Override
-    public User getUserByUsername(String username) throws Exception {
+    public User getUserByUsername(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new Exception("user.notFoundByUsername," + username));
+                .orElseThrow(() -> new UserNotFoundException("user.notFoundByUsername," + username));
     }
 
     @Override
     @Transactional
-    public void updateProfile(ChangeProfileDto changeProfileDto) throws Exception {
+    public void updateProfile(ChangeProfileDto changeProfileDto) {
         User currentUser = getCurrentUserInternal();
         
         if (changeProfileDto.getEmail() != null && !changeProfileDto.getEmail().isEmpty()) {
             // Check if email is already taken by another user
             if (userRepository.findByEmail(changeProfileDto.getEmail()).isPresent() && 
                 !currentUser.getEmail().equals(changeProfileDto.getEmail())) {
-                throw new Exception("register.email.exists");
+                throw new DuplicateResourceException("register.email.exists");
             }
             currentUser.setEmail(changeProfileDto.getEmail());
         }
@@ -152,17 +157,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void changePassword(ChangePasswordDto changePasswordDto) throws Exception {
+    public void changePassword(ChangePasswordDto changePasswordDto) {
         User currentUser = getCurrentUserInternal();
         
         // Verify current password
         if (!passwordEncoder.matches(changePasswordDto.getCurrentPassword(), currentUser.getPassword())) {
-            throw new Exception("auth.invalid");
+            throw new AuthException("auth.invalid");
         }
         
         // Check if new password matches confirmation
         if (!changePasswordDto.getNewPassword().equals(changePasswordDto.getConfirmPassword())) {
-            throw new Exception("register.passwordsNotMatch");
+            throw new ValidationException("register.passwordsNotMatch");
         }
         
         // Update password
@@ -172,7 +177,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void updateNotificationSettings(Map<String, Object> notificationSettings) throws Exception {
+    public void updateNotificationSettings(Map<String, Object> notificationSettings) {
         User currentUser = getCurrentUserInternal();
         
         // Update notification preferences
@@ -187,27 +192,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void updateAvatar(String filename) throws Exception {
+    public void updateAvatar(String filename) {
         User currentUser = getCurrentUserInternal();
         currentUser.setAvatar(filename);
         userRepository.save(currentUser);
     }
 
     @Override
-    public String getCurrentUserAvatar() throws Exception {
+    public String getCurrentUserAvatar() {
         User currentUser = getCurrentUserInternal();
         return currentUser.getAvatar();
     }
 
     @Override
-    public User getCurrentUser() throws Exception {
+    public User getCurrentUser() {
         return getCurrentUserInternal();
     }
 
-    private User getCurrentUserInternal() throws Exception {
+    private User getCurrentUserInternal() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
-            throw new Exception("auth.failed");
+            throw new AuthException("auth.failed");
         }
         
         String username = authentication.getName();

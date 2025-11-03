@@ -10,7 +10,9 @@ import com.example.forum_website.util.MessageUtil;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Controller
 public class CustomErrorController implements ErrorController {
     @Autowired
@@ -26,6 +28,9 @@ public class CustomErrorController implements ErrorController {
             } catch (NumberFormatException ignored) {
             }
         }
+        
+        String requestUri = (String) request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI);
+        log.warn("Error {} occurred at {}", statusCode, requestUri);
 
         String messageKey = switch (statusCode) {
             case 400 -> "error.badRequest";

@@ -38,7 +38,9 @@ import com.example.forum_website.util.MessageUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Controller
 public class SettingController {
 
@@ -196,6 +198,7 @@ public class SettingController {
     @PostMapping(value = "/api/settings/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
     public ApiResponse uploadAvatar(@RequestParam("avatar") MultipartFile file) {
+        log.info("Avatar upload request: size={} bytes, contentType={}", file.getSize(), file.getContentType());
         try {
             if (file.isEmpty()) {
                 String message = messageUtil.getMessage("avatar.upload.empty", null);
@@ -241,18 +244,20 @@ public class SettingController {
                         Files.delete(oldAvatarPath);
                     }
                 } catch (IOException e) {
-                    // Log error but don't fail the upload
-                    System.err.println("Failed to delete old avatar: " + e.getMessage());
+                    log.warn("Failed to delete old avatar {}: {}", oldAvatar, e.getMessage());
                 }
             }
 
+            log.info("Avatar uploaded successfully: {}", filename);
             String message = messageUtil.getMessage("avatar.upload.success", null);
             Map<String, Object> data = Map.of("filename", filename);
             return new ApiResponse("ok", ToastType.SUCCESS, message, data);
         } catch (IOException e) {
+            log.error("IO error during avatar upload: {}", e.getMessage());
             String message = messageUtil.getMessage("avatar.upload.error", null);
             return new ApiResponse("error", ToastType.ERROR, message);
         } catch (Exception e) {
+            log.error("Avatar upload failed: {}", e.getMessage());
             String errorMessage = messageUtil.resolveErrorMessage(e);
             return new ApiResponse("error", ToastType.ERROR, errorMessage);
         }

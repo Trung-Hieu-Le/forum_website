@@ -25,7 +25,9 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Controller
 public class AuthController {
     @Autowired
@@ -48,6 +50,7 @@ public class AuthController {
     @PostMapping("/login")
     @ResponseBody
     public ApiResponse login(@Valid @RequestBody LoginDto loginDto, BindingResult result, HttpServletResponse response) {
+        log.info("Login attempt: username={}", loginDto.getUsername());
         if (result.hasErrors()) {
             Map<String, String> fieldErrors = result.getFieldErrors()
                     .stream()
@@ -64,6 +67,7 @@ public class AuthController {
             String message = messageUtil.getMessage("login.success", null);
             return new ApiResponse("ok", ToastType.SUCCESS, message);
         } catch (Exception e) {
+            log.warn("Login failed for username={}: {}", loginDto.getUsername(), e.getMessage());
             String errorMessage = messageUtil.resolveErrorMessage(e);
             return new ApiResponse("error", ToastType.ERROR, errorMessage);
         }
@@ -86,6 +90,7 @@ public class AuthController {
     @ResponseBody
     public ApiResponse register(@Valid @RequestBody RegisterDto registerDto, BindingResult result,
             HttpServletResponse response) {
+        log.info("Registration attempt: username={}, email={}", registerDto.getUsername(), registerDto.getEmail());
         if (result.hasErrors()) {
             Map<String, String> fieldErrors = result.getFieldErrors()
                     .stream()
@@ -102,6 +107,7 @@ public class AuthController {
             String message = messageUtil.getMessage("register.success", null);
             return new ApiResponse("ok", ToastType.SUCCESS, message);
         } catch (Exception e) {
+            log.warn("Registration failed: {}", e.getMessage());
             String errorMessage = messageUtil.resolveErrorMessage(e);
             return new ApiResponse("error", ToastType.ERROR, errorMessage);
         }

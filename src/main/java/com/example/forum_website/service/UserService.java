@@ -11,16 +11,16 @@ import com.example.forum_website.model.User;
 import jakarta.servlet.http.HttpServletResponse;
 
 public interface UserService {
-    void authenticateAndSetToken(LoginDto loginDto, HttpServletResponse response) throws Exception;
-    void registerUser(RegisterDto registerDto) throws Exception;
-    String initiatePasswordReset(String email) throws Exception;
-    void resetPassword(String token, String newPassword, String confirmPassword) throws Exception;
-    User getUserById(Long userId) throws Exception;
-    User getUserByUsername(String username) throws Exception;
-    void updateProfile(ChangeProfileDto changeProfileDto) throws Exception;
-    void changePassword(ChangePasswordDto changePasswordDto) throws Exception;
-    void updateNotificationSettings(Map<String, Object> notificationSettings) throws Exception;
-    void updateAvatar(String filename) throws Exception;
-    String getCurrentUserAvatar() throws Exception;
-    User getCurrentUser() throws Exception;
+    void authenticateAndSetToken(LoginDto loginDto, HttpServletResponse response);
+    void registerUser(RegisterDto registerDto);
+    String initiatePasswordReset(String email);
+    void resetPassword(String token, String newPassword, String confirmPassword);
+    User getUserById(Long userId);
+    User getUserByUsername(String username);
+    void updateProfile(ChangeProfileDto changeProfileDto);
+    void changePassword(ChangePasswordDto changePasswordDto);
+    void updateNotificationSettings(Map<String, Object> notificationSettings);
+    void updateAvatar(String filename);
+    String getCurrentUserAvatar();
+    User getCurrentUser();
 }
