@@ -1,63 +1,34 @@
 <th:block th:fragment="noticeScript">
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
 
-    <script>
-        function showToast(status, message) {
-            const toastStyles = {
-                primary: { headerBg: '#cfe2ff', color: '#0d6efd' },
-                success: { headerBg: '#d1e7dd', color: '#198754' },
-                warning: { headerBg: '#fff3cd', color: '#ffc107' },
-                danger: { headerBg: '#f8d7da', color: '#dc3545' }
-            };
-            const icons = {
-                primary: 'fa-info-circle',
-                success: 'fa-check-circle',
-                warning: 'fa-exclamation-triangle',
-                danger: 'fa-times-circle'
-            };
-
-            const isDanger = status === 'danger';
-            const toastDelay = 10000;
-
-            const toastId = `toast-${Date.now()}`;
-
-            const toastHtml = `
-                <div id="${toastId}" class="toast toast-${status}" role="alert" aria-live="assertive" aria-atomic="true"
-                    style="background-color: ${toastStyles[status].headerBg};"
-                    data-bs-autohide="${!isDanger}" ${!isDanger ? `data-bs-delay="${toastDelay}"` : ''}>
-                    <div class="toast-header" style="background-color: ${toastStyles[status].headerBg}; color: ${toastStyles[status].color}">
-                        <i class="fas ${icons[status]} me-2" style="color: ${toastStyles[status].color}"></i>
-                        <strong class="me-auto">${status.charAt(0).toUpperCase() + status.slice(1)}</strong>
-                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                        <div class="progress w-100 mt-2">
-                            <div class="progress-bar" style="width: 100%; background-color: ${toastStyles[status].color}; height: 4px;" role="progressbar"></div>
-                        </div>
-                    </div>
-                    <div class="toast-body">${message}</div>
+    <!-- Toast Template (hidden) -->
+    <template id="toast-template">
+        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" style="position: relative;">
+            <div class="toast-body d-flex align-items-center" style="padding: 12px 16px;">
+                <i class="fas me-2"></i>
+                <span class="me-auto"></span>
+                <button type="button" class="btn-close ms-2" data-bs-dismiss="toast" aria-label="Close"></button>
+                <div class="progress w-100 position-absolute bottom-0 start-0" style="height: 4px;">
+                    <div class="progress-bar" style="width: 100%;" role="progressbar"></div>
                 </div>
-            `;
+            </div>
+        </div>
+    </template>
 
-            $('.toast-container').append(toastHtml);
-            const $toast = $(`#${toastId}`);
-            const toast = new bootstrap.Toast($toast[0]);
-            toast.show();
-
-            if (!isDanger) {
-                setTimeout(() => {
-                    $toast.find('.progress-bar')
-                        .css('width', '0%')
-                        .css('transition', `width ${toastDelay}ms linear`);
-                }, 10);
-            }
-
-            $toast.on('hidden.bs.toast', () => $toast.remove());
-        }
-
+    <script>
         $(document).ready(function () {
+            // Map server-side status to client-side status
+            const statusMap = {
+                'primary': 'info',
+                'danger': 'error'
+            };
+            
             const status = /*[[${toastStatus}]]*/ 'null';
             const message = /*[[${toastMessage}]]*/ 'null';
             if (status !== 'null' && message !== 'null') {
-                showToast(status, message);
+                // Normalize status (map primary->info, danger->error, keep others as-is)
+                const normalizedStatus = statusMap[status] || status;
+                showToast(normalizedStatus, message);
             }
 
             // Auto-AJAX forms
@@ -75,12 +46,16 @@
                     contentType: 'application/json',
                     data: JSON.stringify(formData)
                 }).done(function (resp) {
+                    // Normalize errorTag to match toast.js status format
+                    const statusMap = { 'primary': 'info', 'danger': 'error' };
+                    const normalizedStatus = statusMap[resp.errorTag] || resp.errorTag || 'error';
+                    
                     // Nếu có mảng messages, show toast cho từng cái
                     if (resp.messages && Array.isArray(resp.messages)) {
-                        resp.messages.forEach(msg => showToast(resp.errorTag, msg));
+                        resp.messages.forEach(msg => showToast(normalizedStatus, msg));
                     } else {
                         // fallback: single message
-                        showToast(resp.errorTag, resp.message);
+                        showToast(normalizedStatus, resp.message);
                     }
 
                     // nếu thành công và có redirectUrl
@@ -89,7 +64,7 @@
                     }
                 })
                     .fail(function () {
-                        showToast('danger', 'Unknown error');
+                        showToast('error', 'Unknown error');
                     });
             });
         });

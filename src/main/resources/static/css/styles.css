@@ -40,8 +40,8 @@ header {
 }
 
 .toast-body {
-    background-color: white;
-    color: black;
+    background-color: var(--toast-bg, #ffffff);
+    color: var(--text-color, #000000);
 }
 
 .toast-header {

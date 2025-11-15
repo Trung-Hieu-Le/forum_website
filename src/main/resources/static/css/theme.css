@@ -3,6 +3,7 @@
     --bg-color: #ffffff;
     --text-color: #000000;
     --primary-color: #0d6efd;
+    --toast-bg: #ffffff;
 }
 
 /* Dark Theme */
@@ -10,6 +11,7 @@
     --bg-color: #121212;
     --text-color: #e0e0e0;
     --primary-color: #bb86fc;
+    --toast-bg: #1e1e1e;
 }
 
 /* Dark Blue Theme */
@@ -17,6 +19,7 @@
     --bg-color: #001f3f;
     --text-color: #ffffff;
     --primary-color: #0074D9;
+    --toast-bg: #002d5c;
 }
 
 /* Apply variables globally */

@@ -7,17 +7,22 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
+import com.example.forum_website.config.ThemeInterceptor;
 import com.example.forum_website.constant.AppConstants;
 import com.example.forum_website.util.MessageUtil;
 
 @Configuration
 public class LocaleConfig implements WebMvcConfigurer {
+    
+    @Autowired
+    private ThemeInterceptor themeInterceptor;
 
     @Bean
     public ResourceBundleMessageSource messageSource() {
@@ -46,6 +51,7 @@ public class LocaleConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
+        registry.addInterceptor(themeInterceptor);
     }
 
     @Bean

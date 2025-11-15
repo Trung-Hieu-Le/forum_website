@@ -35,6 +35,7 @@ import com.example.forum_website.enums.ToastType;
 import com.example.forum_website.service.UserService;
 import com.example.forum_website.util.MessageUtil;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -74,9 +75,16 @@ public class SettingController {
     }
 
     @GetMapping("/change-theme")
-    public String changeTheme(HttpServletRequest request, @RequestParam String theme) {
+    public String changeTheme(HttpServletRequest request, HttpServletResponse response, @RequestParam String theme) {
         if (SUPPORTED_THEMES.contains(theme)) {
+            // Save to session
             request.getSession().setAttribute("theme", theme);
+            
+            // Save in cookie for persistence after logout
+            Cookie themeCookie = new Cookie("theme", theme);
+            themeCookie.setPath("/");
+            themeCookie.setMaxAge(365 * 24 * 60 * 60); // 1 year
+            response.addCookie(themeCookie);
         }
         return "redirect:" + Optional.ofNullable(request.getHeader("Referer")).orElse("/");
     }

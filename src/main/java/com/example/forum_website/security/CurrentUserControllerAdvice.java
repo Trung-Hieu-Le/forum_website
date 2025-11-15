@@ -1,11 +1,11 @@
 package com.example.forum_website.security;
 
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import com.example.forum_website.constant.JwtConstants;
+import com.example.forum_website.constant.SecurityConstants;
 import com.example.forum_website.repository.UserRepository;
 
 import io.jsonwebtoken.Claims;
@@ -14,7 +14,6 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @ControllerAdvice
 public class CurrentUserControllerAdvice {
-    private static final Set<String> AUTH_CLEAR_PATHS = Set.of("/login", "/register", "/forgot-password");
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -24,8 +23,11 @@ public class CurrentUserControllerAdvice {
 
     @ModelAttribute("userAuth")
     public UserAuthDto getUserAuth(HttpServletRequest request) {
-        if (AUTH_CLEAR_PATHS.contains(request.getRequestURI())) {
-            return null;
+        String requestUri = request.getRequestURI();
+        for (String path : SecurityConstants.AUTH_CLEAR_PATHS) {
+            if (requestUri.equals(path)) {
+                return null;
+            }
         }
 
         String token = getTokenFromCookies(request.getCookies());
@@ -51,7 +53,7 @@ public class CurrentUserControllerAdvice {
     private String getTokenFromCookies(Cookie[] cookies) {
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if ("tokenAuth".equals(cookie.getName())) {
+                if (JwtConstants.TOKEN_COOKIE_NAME.equals(cookie.getName())) {
                     return cookie.getValue();
                 }
             }

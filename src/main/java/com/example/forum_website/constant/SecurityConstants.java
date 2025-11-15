@@ -38,5 +38,8 @@ public final class SecurityConstants {
     // Roles
     public static final String ROLE_ADMIN = "ADMIN";
     public static final String ROLE_USER = "USER";
+    
+    // Auth clear paths (paths that should clear auth cookies)
+    public static final String[] AUTH_CLEAR_PATHS = {"/login", "/register", "/forgot-password"};
 }
 
