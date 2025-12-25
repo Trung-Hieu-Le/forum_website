@@ -33,6 +33,7 @@ build/
 .vscode/
 
 ### Logs ###
-logs/*.log
-logs/*.log.*
-!logs/README-LOGS.md
+# Ignore all files in logs directory but keep the directory structure
+logs/**
+!logs/
+!logs/.gitkeep
