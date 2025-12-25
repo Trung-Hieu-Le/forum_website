@@ -13,22 +13,6 @@
         </encoder>
     </appender>
 
-    <!-- All Logs Appender with daily rolling -->
-    <appender name="FILE_ALL" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-            <charset>UTF-8</charset>
-        </encoder>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/%d{yyyyMMdd}.log</fileNamePattern>
-            <maxHistory>${MAX_HISTORY}</maxHistory>
-            <totalSizeCap>5GB</totalSizeCap>
-        </rollingPolicy>
-        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
-        </triggeringPolicy>
-    </appender>
-
     <!-- Error Logs Appender with daily rolling -->
     <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <encoder>
@@ -39,7 +23,7 @@
             <level>ERROR</level>
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/%d{yyyyMMdd}_error.log</fileNamePattern>
+            <fileNamePattern>${LOG_PATH}/%d{yyyyMMdd}/error.log</fileNamePattern>
             <maxHistory>${MAX_HISTORY}</maxHistory>
             <totalSizeCap>5GB</totalSizeCap>
         </rollingPolicy>
@@ -60,7 +44,7 @@
             <onMismatch>DENY</onMismatch>
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/%d{yyyyMMdd}_info.log</fileNamePattern>
+            <fileNamePattern>${LOG_PATH}/%d{yyyyMMdd}/info.log</fileNamePattern>
             <maxHistory>${MAX_HISTORY}</maxHistory>
             <totalSizeCap>5GB</totalSizeCap>
         </rollingPolicy>
@@ -81,7 +65,28 @@
             <onMismatch>DENY</onMismatch>
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/%d{yyyyMMdd}_warn.log</fileNamePattern>
+            <fileNamePattern>${LOG_PATH}/%d{yyyyMMdd}/warn.log</fileNamePattern>
+            <maxHistory>${MAX_HISTORY}</maxHistory>
+            <totalSizeCap>5GB</totalSizeCap>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+        </triggeringPolicy>
+    </appender>
+
+    <!-- Debug Logs Appender with daily rolling -->
+    <appender name="FILE_DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/%d{yyyyMMdd}/debug.log</fileNamePattern>
             <maxHistory>${MAX_HISTORY}</maxHistory>
             <totalSizeCap>5GB</totalSizeCap>
         </rollingPolicy>
@@ -93,19 +98,19 @@
     <!-- Root logger -->
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="FILE_ALL"/>
         <appender-ref ref="FILE_ERROR"/>
         <appender-ref ref="FILE_INFO"/>
         <appender-ref ref="FILE_WARN"/>
+        <appender-ref ref="FILE_DEBUG"/>
     </root>
 
     <!-- Application specific logger -->
     <logger name="com.example.forum_website" level="INFO" additivity="false">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="FILE_ALL"/>
         <appender-ref ref="FILE_ERROR"/>
         <appender-ref ref="FILE_INFO"/>
         <appender-ref ref="FILE_WARN"/>
+        <appender-ref ref="FILE_DEBUG"/>
     </logger>
 
     <!-- Spring Framework logger -->

@@ -1,5 +1,7 @@
 package com.example.forum_website.model;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,4 +20,7 @@ public class Topic {
 
     @Column(nullable = false)
     private String name;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

@@ -1,21 +1,192 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{client/layouts/base}">
 <div th:fragment="content">
-    <h1>Forum Threads</h1>
-    <div id="thread-list">
-        <div th:each="thread : ${threads}" class="card mb-3">
-            <div class="card-body">
-                <h5 class="card-title" th:text="${thread.title}"></h5>
-                <p class="card-text" th:text="${thread.content}"></p>
-                <p class="card-text"><small class="text-muted">Topic: <span th:text="${thread.topic.name}"></span> |
-                        Posted on <span
-                            th:text="${#temporals.format(thread.createdAt, 'yyyy-MM-dd HH:mm')}"></span></small></p>
+    <div class="home-container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-7">
+                <!-- Create Post Form (only show if logged in) -->
+                <th:block th:if="${userAuth != null}">
+                    <div class="create-post-card card mb-3 shadow-sm">
+                        <div class="card-body">
+                            <form id="create-post-form">
+                                <div class="mb-3">
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="post-title" 
+                                           th:placeholder="#{home.post.title.placeholder}"
+                                           required>
+                                </div>
+                                <div class="mb-3">
+                                    <div id="post-editor" style="min-height: 150px;"></div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <select class="form-select form-select-sm" id="post-topic" style="width: auto; display: inline-block;" required>
+                                            <option value="" th:text="#{home.post.topic.placeholder}">Choose topic...</option>
+                                            <option th:each="topic : ${topics}" 
+                                                    th:value="${topic.id}" 
+                                                    th:text="${topic.name}"></option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary" id="submit-post-btn">
+                                        <i class="fas fa-paper-plane me-2"></i><span th:text="#{home.post.submit}">Post</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </th:block>
+                
+                <!-- Login Prompt (show if not logged in) -->
+                <th:block th:if="${userAuth == null}">
+                    <div class="login-prompt-card card mb-3 shadow-sm">
+                        <div class="card-body text-center py-4">
+                            <i class="fas fa-lock fa-2x text-muted mb-3"></i>
+                            <p class="mb-3 text-muted" th:text="#{home.login.required}">You need to log in to create a post</p>
+                            <a href="/login" class="btn btn-primary">
+                                <i class="fas fa-sign-in-alt me-2"></i><span th:text="#{navbar.login}">Login</span>
+                            </a>
+                            <span class="mx-2 text-muted" th:text="#{home.login.or}">or</span>
+                            <a href="/register" class="btn btn-outline-primary">
+                                <i class="fas fa-user-plus me-2"></i><span th:text="#{navbar.register}">Register</span>
+                            </a>
+                        </div>
+                    </div>
+                </th:block>
+
+                <div id="thread-list">
+                    <div th:each="thread : ${threads}" class="post-card card mb-3 shadow-sm">
+                        <div class="card-body">
+                            <!-- Post Header: Avatar, Username, Time, Edit Button -->
+                            <div class="post-header d-flex align-items-center justify-content-between mb-3">
+                                <div class="d-flex align-items-center">
+                                    <img th:src="@{${'/avatar/' + (thread.user.avatar != null ? thread.user.avatar : 'default-avatar.png')}}" 
+                                         alt="Avatar" 
+                                         class="post-avatar rounded-circle me-3"
+                                         onerror="this.onerror=null;this.src='/avatar/default-avatar.png'">
+                                    <div>
+                                        <h6 class="mb-0 post-username" th:text="${thread.user.username}"></h6>
+                                        <small class="text-muted post-time" 
+                                               th:text="${#temporals.format(thread.createdAt, 'dd/MM/yyyy HH:mm')}"></small>
+                                    </div>
+                                </div>
+                                <div class="post-actions">
+                                    <th:block th:if="${userAuth != null && userAuth?.id != null && userAuth?.id == thread.user.id}">
+                                        <button class="btn btn-sm btn-outline-secondary edit-post-btn" 
+                                                th:data-thread-id="${thread.id}"
+                                                th:title="#{home.post.edit}">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </th:block>
+                                </div>
+                            </div>
+                            
+                            <!-- Post Title -->
+                            <h5 class="post-title mb-2" th:text="${thread.title}"></h5>
+                            
+                            <!-- Post Content -->
+                            <div class="post-content mb-2" th:utext="${thread.content}"></div>
+                            
+                            <!-- Post Footer: Topic Tag -->
+                            <div class="post-footer mt-3 pt-2 border-top">
+                                <span class="badge bg-secondary" th:text="${thread.topic.name}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Loading indicator -->
+                <div id="loading" class="text-center py-4" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2 text-muted" th:text="#{home.post.loading}">Loading more posts...</p>
+                </div>
             </div>
         </div>
     </div>
-    <div id="loading" class="text-center" style="display: none;">
-        <p>Loading more threads...</p>
+    
+    <!-- Edit Post Modal -->
+    <div class="modal fade" id="editPostModal" tabindex="-1" aria-labelledby="editPostModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editPostModalLabel" th:text="#{home.post.update.title}">Edit Post</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="edit-post-form">
+                        <input type="hidden" id="edit-thread-id">
+                        <div class="mb-3">
+                            <label for="edit-post-title" class="form-label" th:text="#{home.post.title.placeholder}">Post title...</label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="edit-post-title" 
+                                   th:placeholder="#{home.post.title.placeholder}"
+                                   required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-post-editor" class="form-label">Content</label>
+                            <div id="edit-post-editor" style="min-height: 200px;"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-post-topic" class="form-label" th:text="#{home.post.topic.placeholder}">Choose topic...</label>
+                            <select class="form-select" id="edit-post-topic" required>
+                                <option value="" th:text="#{home.post.topic.placeholder}">Choose topic...</option>
+                                <option th:each="topic : ${topics}" 
+                                        th:value="${topic.id}" 
+                                        th:text="${topic.name}"></option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{settings.profile.button.cancel}">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="update-post-btn">
+                        <i class="fas fa-save me-2"></i><span th:text="#{home.post.update.submit}">Update</span>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
+    <script th:inline="javascript">
+        // Pass userAuth to JavaScript if available
+        /*[# th:if="${userAuth != null}"]*/
+        window.userAuth = {
+            id: /*[[${userAuth.id}]]*/ null,
+            username: /*[[${userAuth.username}]]*/ '',
+            fullname: /*[[${userAuth.fullname}]]*/ ''
+        };
+        /*[/]*/
+        /*[# th:if="${userAuth == null}"]*/
+        window.userAuth = null;
+        /*[/]*/
+        window.currentPage = /*[[${currentPage}]]*/ 0;
+        window.totalPages = /*[[${totalPages}]]*/ 0;
+        
+        // Pass locale messages to JavaScript
+        window.messages = {
+            postTitlePlaceholder: /*[[#{home.post.title.placeholder}]]*/ 'Post title...',
+            postTopicPlaceholder: /*[[#{home.post.topic.placeholder}]]*/ 'Choose topic...',
+            postSubmit: /*[[#{home.post.submit}]]*/ 'Post',
+            postSubmitLoading: /*[[#{home.post.submit.loading}]]*/ 'Posting...',
+            postEditorPlaceholder: /*[[#{home.post.editor.placeholder}]]*/ 'Write something...',
+            postEdit: /*[[#{home.post.edit}]]*/ 'Edit',
+            postValidationTitleRequired: /*[[#{home.post.validation.title.required}]]*/ 'Please enter post title',
+            postValidationTopicRequired: /*[[#{home.post.validation.topic.required}]]*/ 'Please select a topic',
+            postSuccess: /*[[#{home.post.success}]]*/ 'Post created successfully!',
+            postError: /*[[#{home.post.error}]]*/ 'An error occurred',
+            postErrorCreate: /*[[#{home.post.error.create}]]*/ 'An error occurred while creating post',
+            postEmpty: /*[[#{home.post.empty}]]*/ 'No posts yet',
+            postErrorLoad: /*[[#{home.post.error.load}]]*/ 'Unable to load post list',
+            postUpdateSuccess: /*[[#{home.post.update.success}]]*/ 'Post updated successfully!',
+            postUpdateError: /*[[#{home.post.update.error}]]*/ 'An error occurred while updating post',
+            postUpdateSubmit: /*[[#{home.post.update.submit}]]*/ 'Update',
+            postUpdateSubmitLoading: /*[[#{home.post.update.submit.loading}]]*/ 'Updating...'
+        };
+    </script>
+    <script th:src="@{/js/quill-editor.js}"></script>
+    <script th:src="@{/js/home.js}"></script>
     <script th:src="@{/js/infinite-scroll.js}"></script>
 </div>
 </html>

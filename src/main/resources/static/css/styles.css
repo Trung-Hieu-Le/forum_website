@@ -183,3 +183,204 @@ main {
 footer {
     flex-shrink: 0;
 }
+
+/* Post Card Styles */
+.home-container {
+    padding: 20px 0;
+}
+
+.post-card {
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.post-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+.post-avatar {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border: 2px solid #e9ecef;
+}
+
+.post-username {
+    font-weight: 600;
+    color: #212529;
+    font-size: 1rem;
+}
+
+.post-time {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.post-title {
+    font-weight: 600;
+    color: #212529;
+    font-size: 1.25rem;
+}
+
+.post-content {
+    color: #495057;
+    line-height: 1.6;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.post-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.post-actions .btn {
+    border: none;
+    padding: 6px 12px;
+}
+
+.post-actions .btn:hover {
+    background-color: #f8f9fa;
+}
+
+.post-footer {
+    border-top: 1px solid #e9ecef !important;
+}
+
+/* Create Post Form Styles */
+.create-post-card {
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 12px;
+    background-color: #fff;
+}
+
+/* Login Prompt Card */
+.login-prompt-card {
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 12px;
+    background-color: #fff;
+}
+
+.login-prompt-card i {
+    opacity: 0.6;
+}
+
+.login-prompt-card .btn {
+    border-radius: 20px;
+    padding: 8px 20px;
+    font-weight: 500;
+}
+
+.create-post-card .form-control,
+.create-post-card .form-select {
+    border-radius: 8px;
+}
+
+.create-post-card #post-title {
+    font-size: 1.1rem;
+    padding: 12px 16px;
+    border: 1px solid #dee2e6;
+}
+
+.create-post-card #post-title:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.create-post-card .ql-container {
+    border-radius: 0 0 8px 8px;
+    font-size: 1rem;
+}
+
+.create-post-card .ql-toolbar {
+    border-radius: 8px 8px 0 0;
+    border: 1px solid #ccc;
+}
+
+.create-post-card .ql-editor {
+    min-height: 150px;
+}
+
+.create-post-card .ql-editor.ql-blank::before {
+    font-style: normal;
+    color: #6c757d;
+}
+
+.create-post-card #submit-post-btn {
+    border-radius: 20px;
+    padding: 8px 20px;
+    font-weight: 500;
+}
+
+.create-post-card #post-topic {
+    border-radius: 20px;
+    padding: 6px 16px;
+}
+
+/* Quill Editor Custom Styles */
+.ql-snow .ql-stroke {
+    stroke: #495057;
+}
+
+.ql-snow .ql-fill {
+    fill: #495057;
+}
+
+.ql-snow .ql-picker-label {
+    color: #495057;
+}
+
+.ql-snow.ql-toolbar button:hover,
+.ql-snow .ql-toolbar button:hover,
+.ql-snow.ql-toolbar button.ql-active,
+.ql-snow .ql-toolbar button.ql-active {
+    color: #0d6efd;
+}
+
+.ql-snow.ql-toolbar button:hover .ql-stroke,
+.ql-snow .ql-toolbar button:hover .ql-stroke,
+.ql-snow.ql-toolbar button.ql-active .ql-stroke,
+.ql-snow .ql-toolbar button.ql-active .ql-stroke {
+    stroke: #0d6efd;
+}
+
+.ql-snow.ql-toolbar button:hover .ql-fill,
+.ql-snow .ql-toolbar button:hover .ql-fill,
+.ql-snow.ql-toolbar button.ql-active .ql-fill,
+.ql-snow .ql-toolbar button.ql-active .ql-fill {
+    fill: #0d6efd;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .home-container {
+        padding: 10px 0;
+    }
+    
+    .post-avatar {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .post-title {
+        font-size: 1.1rem;
+    }
+    
+    .create-post-card #post-topic {
+        width: 100% !important;
+        margin-bottom: 10px;
+    }
+    
+    .create-post-card .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .create-post-card #submit-post-btn {
+        width: 100%;
+    }
+}

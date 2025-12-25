@@ -30,6 +30,11 @@ public class Thread {
     @JoinColumn(name = "topic_id", nullable = false)
     private Topic topic;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    private Long groupId;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

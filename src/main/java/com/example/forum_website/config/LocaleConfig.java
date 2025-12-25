@@ -14,7 +14,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
-import com.example.forum_website.config.ThemeInterceptor;
 import com.example.forum_website.constant.AppConstants;
 import com.example.forum_website.util.MessageUtil;
 
